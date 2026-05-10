@@ -1,7 +1,6 @@
 import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Button } from '@/components/ui/Button'
 import { composeButtonClassName } from '@/lib/button-styles'
 import { Container } from '@/components/ui/Container'
 import { cn } from '@/lib/utils'
@@ -79,28 +78,36 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Button variant="ghost" className="px-4 text-sm font-semibold">
+          <Link
+            to="/giris"
+            className={composeButtonClassName(
+              'ghost',
+              'px-4 text-sm font-semibold',
+            )}
+          >
             Giriş yap
-          </Button>
-          <a
-            href="#cta"
+          </Link>
+          <Link
+            to="/kayit"
             className={composeButtonClassName(
               'primary',
               'rounded-full px-6 py-2.5 text-sm shadow-lg shadow-gorev-green-500/15',
             )}
           >
             Ücretsiz başla
-          </a>
+          </Link>
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <Button
-            variant="ghost"
-            className="px-3 text-sm font-semibold"
-            type="button"
+          <Link
+            to="/giris"
+            className={composeButtonClassName(
+              'ghost',
+              'px-3 text-sm font-semibold',
+            )}
           >
             Giriş
-          </Button>
+          </Link>
           <button
             type="button"
             className={cn(
@@ -136,8 +143,8 @@ export function SiteHeader() {
             </a>
           ))}
           <div className="mt-3 flex flex-col gap-2 border-t border-gorev-navy-800 pt-4">
-            <a
-              href="#cta"
+            <Link
+              to="/kayit"
               className={composeButtonClassName(
                 'primary',
                 'w-full justify-center rounded-full py-3 text-base',
@@ -145,7 +152,7 @@ export function SiteHeader() {
               onClick={() => setMenuOpen(false)}
             >
               Ücretsiz başla
-            </a>
+            </Link>
           </div>
         </Container>
       </div>
