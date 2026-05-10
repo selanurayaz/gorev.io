@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+
+/* Brand tokens — görev.io (navy, yellow, green, white) */
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+
+  --color-gorev-navy-950: #070b14;
+  --color-gorev-navy-900: #0c1222;
+  --color-gorev-navy-800: #121a2e;
+  --color-gorev-yellow-400: #facc15;
+  --color-gorev-yellow-300: #fde047;
+  --color-gorev-green-500: #22c55e;
+  --color-gorev-green-400: #4ade80;
+  --color-gorev-snow: #f8fafc;
+  --color-gorev-muted: #94a3b8;
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth antialiased;
+  }
+
+  body {
+    @apply min-h-dvh bg-gorev-navy-950 font-sans text-gorev-snow;
+  }
+
+  #root {
+    @apply min-h-dvh;
+  }
+}
