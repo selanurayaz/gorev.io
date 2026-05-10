@@ -6,9 +6,9 @@ const columns = [
   {
     title: 'Ürün',
     links: [
-      { label: 'Keşfet', href: '#kategoriler' },
+      { label: 'Popüler hizmetler', href: '#populer-hizmetler' },
       { label: 'Nasıl çalışır?', href: '#nasil-calisir' },
-      { label: 'AI fiyat', href: '#ai-fiyat' },
+      { label: 'AI özellikleri', href: '#ai-fiyat' },
       { label: 'Öne çıkanlar', href: '#one-cikanlar' },
     ],
   },
@@ -38,37 +38,66 @@ const columns = [
   },
 ] as const
 
+const social = [
+  { label: 'X', href: '#' },
+  { label: 'LinkedIn', href: '#' },
+  { label: 'Instagram', href: '#' },
+] as const
+
 export function SiteFooter() {
   return (
     <footer
-      className="border-t border-gorev-navy-800 bg-gorev-navy-950"
+      className="relative border-t border-gorev-navy-800 bg-gorev-navy-950"
       role="contentinfo"
     >
-      <Container className="py-14">
-        <div className="grid gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-4">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gorev-yellow-400/35 to-transparent"
+        aria-hidden
+      />
+
+      <Container className="py-16 lg:py-20">
+        <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-5">
             <Link
               to="/"
-              className="inline-block text-xl font-semibold tracking-tight text-gorev-snow"
+              className="inline-block text-2xl font-semibold tracking-tight text-gorev-snow transition hover:text-gorev-yellow-300"
             >
               görev<span className="text-gorev-yellow-400">.io</span>
             </Link>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-gorev-muted">
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-gorev-muted">
               Yerel ve çevrimiçi kısa süreli hizmetler için modern pazar yeri.
-              Şeffaf süreç, güçlü güven ve sade bir arayüz.
+              Şeffaf süreç, güçlü güven ve okunaklı tipografi ile üretken bir
+              deneyim.
             </p>
-            <p className="mt-6 text-xs text-gorev-muted">
-              İstanbul · Ankara · İzmir ve çevrimiçi Türkiye
+            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              {social.map((s, i) => (
+                <span key={s.label} className="flex items-center gap-x-5">
+                  {i > 0 ? (
+                    <span className="text-gorev-navy-700" aria-hidden>
+                      ·
+                    </span>
+                  ) : null}
+                  <a
+                    href={s.href}
+                    className="font-medium text-gorev-muted transition hover:text-gorev-snow"
+                  >
+                    {s.label}
+                  </a>
+                </span>
+              ))}
+            </div>
+            <p className="mt-8 text-xs text-gorev-muted">
+              İstanbul · Ankara · İzmir · uzaktan Türkiye
             </p>
           </div>
 
-          <div className="grid gap-10 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-4">
+          <div className="grid gap-10 sm:grid-cols-2 lg:col-span-7 lg:grid-cols-4">
             {columns.map((col) => (
               <div key={col.title}>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gorev-muted">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gorev-muted">
                   {col.title}
                 </p>
-                <ul className="mt-4 space-y-3 text-sm">
+                <ul className="mt-5 space-y-3 text-sm">
                   {col.links.map((link) => (
                     <li key={link.label}>
                       <a
@@ -85,10 +114,11 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-gorev-navy-800 pt-8 text-xs text-gorev-muted sm:flex-row sm:items-center">
+        <div className="mt-16 flex flex-col gap-4 border-t border-gorev-navy-800 pt-10 text-xs text-gorev-muted sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} görev.io. Tüm hakları saklıdır.</p>
-          <p className="text-gorev-muted/80">
-            Tasarım ve içerik örnek amaçlıdır; canlı ürün mesajları değişebilir.
+          <p className="max-w-xl text-gorev-muted/85">
+            Örnek içerik ve vitrin verisi; canlı ürün mesajları ve metrikler
+            değişebilir.
           </p>
         </div>
       </Container>

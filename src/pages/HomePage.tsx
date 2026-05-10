@@ -3,14 +3,14 @@ import { CtaSection } from '@/components/landing/CtaSection'
 import { FeaturedServicesSection } from '@/components/landing/FeaturedServicesSection'
 import { HeroSection } from '@/components/landing/HeroSection'
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection'
-import { PopularCategoriesSection } from '@/components/landing/PopularCategoriesSection'
+import { PopularServicesSection } from '@/components/landing/PopularServicesSection'
 import { StatsSection } from '@/components/landing/StatsSection'
 
 export function HomePage() {
   return (
     <>
       <HeroSection />
-      <PopularCategoriesSection />
+      <PopularServicesSection />
       <HowItWorksSection />
       <AiPricingSection />
       <FeaturedServicesSection />

@@ -1,0 +1,154 @@
+import { useEffect, useId, useState } from 'react'
+import { Link } from 'react-router-dom'
+
+import { Button } from '@/components/ui/Button'
+import { composeButtonClassName } from '@/lib/button-styles'
+import { Container } from '@/components/ui/Container'
+import { cn } from '@/lib/utils'
+
+const NAV_LINKS = [
+  { href: '#populer-hizmetler', label: 'Popüler hizmetler' },
+  { href: '#nasil-calisir', label: 'Nasıl çalışır?' },
+  { href: '#ai-fiyat', label: 'AI özellikleri' },
+  { href: '#one-cikanlar', label: 'Öne çıkanlar' },
+] as const
+
+function MenuIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      aria-hidden
+    >
+      {open ? (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M6 18 18 6M6 6l12 12"
+        />
+      ) : (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+        />
+      )}
+    </svg>
+  )
+}
+
+const linkClass =
+  'relative text-sm font-medium text-gorev-muted transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-gorev-yellow-400 after:transition after:duration-200 hover:text-gorev-snow hover:after:scale-x-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gorev-yellow-400'
+
+export function SiteHeader() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuId = useId()
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menuOpen])
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-gorev-navy-800/90 bg-gorev-navy-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-gorev-navy-950/75">
+      <Container className="flex items-center justify-between gap-4 py-3.5 sm:py-4">
+        <Link
+          to="/"
+          className="text-lg font-semibold tracking-tight text-gorev-snow transition-colors hover:text-gorev-yellow-300"
+          onClick={() => setMenuOpen(false)}
+        >
+          görev<span className="text-gorev-yellow-400">.io</span>
+        </Link>
+
+        <nav
+          className="hidden items-center gap-8 lg:flex"
+          aria-label="Ana menü"
+        >
+          {NAV_LINKS.map((item) => (
+            <a key={item.href} href={item.href} className={linkClass}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="hidden items-center gap-3 lg:flex">
+          <Button variant="ghost" className="px-4 text-sm font-semibold">
+            Giriş yap
+          </Button>
+          <a
+            href="#cta"
+            className={composeButtonClassName(
+              'primary',
+              'rounded-full px-6 py-2.5 text-sm shadow-lg shadow-gorev-green-500/15',
+            )}
+          >
+            Ücretsiz başla
+          </a>
+        </div>
+
+        <div className="flex items-center gap-2 lg:hidden">
+          <Button
+            variant="ghost"
+            className="px-3 text-sm font-semibold"
+            type="button"
+          >
+            Giriş
+          </Button>
+          <button
+            type="button"
+            className={cn(
+              'inline-flex items-center justify-center rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/60 p-2.5 text-gorev-snow transition hover:border-gorev-yellow-400/40 hover:bg-gorev-navy-900',
+              menuOpen && 'border-gorev-yellow-400/50 bg-gorev-navy-900',
+            )}
+            aria-expanded={menuOpen}
+            aria-controls={menuId}
+            aria-label={menuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <MenuIcon open={menuOpen} />
+          </button>
+        </div>
+      </Container>
+
+      <div
+        id={menuId}
+        className={cn(
+          'border-t border-gorev-navy-800 bg-gorev-navy-950/98 lg:hidden',
+          menuOpen ? 'block' : 'hidden',
+        )}
+      >
+        <Container className="flex flex-col gap-1 py-4">
+          {NAV_LINKS.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="rounded-xl px-3 py-3 text-base font-medium text-gorev-snow transition hover:bg-gorev-navy-900"
+              onClick={() => setMenuOpen(false)}
+            >
+              {item.label}
+            </a>
+          ))}
+          <div className="mt-3 flex flex-col gap-2 border-t border-gorev-navy-800 pt-4">
+            <a
+              href="#cta"
+              className={composeButtonClassName(
+                'primary',
+                'w-full justify-center rounded-full py-3 text-base',
+              )}
+              onClick={() => setMenuOpen(false)}
+            >
+              Ücretsiz başla
+            </a>
+          </div>
+        </Container>
+      </div>
+    </header>
+  )
+}

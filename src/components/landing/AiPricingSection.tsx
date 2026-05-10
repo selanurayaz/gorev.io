@@ -2,9 +2,9 @@ import { LandingSection } from '@/components/landing/LandingSection'
 import { Container } from '@/components/ui/Container'
 
 const bullets = [
-  'Bölge ve mevsime göre talep sinyalleriyle başlangıç bütçesi önerisi.',
-  'Benzer görevlerdeki tamamlanma süresi ve başarı oranı ile risk görünürlüğü.',
-  'Şeffaf aralıklar — sürpriz ücret ve kötü sürprizleri azaltmak için.',
+  'Konum, mevsim ve benzer görevlerden talep tahmini — doğru zamanda doğru teklif.',
+  'Metin + bağlam ipuçlarıyla yapay zeka destekli fiyat koridoru ve şeffaf aralık.',
+  'Tamamlanma süresi ve başarı oranı sinyalleriyle riskleri önceden görünür kılma.',
 ]
 
 export function AiPricingSection() {
@@ -17,18 +17,21 @@ export function AiPricingSection() {
               Yapay zeka destekli
             </p>
             <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-gorev-snow sm:text-4xl">
-              Akıllı fiyat önerisi ve talep tahmini
+              Akıllı fiyat ve talep öngörüsü
             </h2>
             <p className="mt-5 text-base leading-relaxed text-gorev-muted sm:text-lg">
-              görev.io; görev metnini ve çevresel ipuçlarını kullanarak makul bir
-              fiyat koridoru önerir. Amaç: hem alıcı hem satıcı için adil bir
-              başlangıç noktası — abartılı düşük teklifleri ve hayal kırıklığını
-              azaltmak.
+              görev.io; görev metnini, lokasyonu ve geçmiş iş örüntülerini bir
+              araya getirerek hem talebi tahmin eder hem de adil bir başlangıç
+              fiyat aralığı önerir. Notion tarzı sade özet; Uber tarzı şeffaf
+              beklenti yönetimi.
             </p>
 
             <ul className="mt-8 space-y-4">
               {bullets.map((text) => (
-                <li key={text} className="flex gap-3 text-sm leading-relaxed text-gorev-muted">
+                <li
+                  key={text}
+                  className="flex gap-3 text-sm leading-relaxed text-gorev-muted"
+                >
                   <span
                     className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-gorev-green-500"
                     aria-hidden
@@ -45,17 +48,17 @@ export function AiPricingSection() {
               aria-hidden
             />
             <div className="relative overflow-hidden rounded-3xl border border-gorev-navy-800 bg-gradient-to-br from-gorev-navy-900 to-gorev-navy-950 p-6 shadow-2xl shadow-black/40 sm:p-8">
-              <div className="flex items-center justify-between gap-4 border-b border-gorev-navy-800 pb-5">
+              <div className="flex flex-col gap-4 border-b border-gorev-navy-800 pb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-xs font-medium uppercase tracking-wide text-gorev-muted">
                     Örnek görev
                   </p>
-                  <p className="mt-1 text-lg font-semibold text-gorev-snow">
-                    “Bornova’da 3 saat bahçe bakımı”
+                  <p className="mt-1 text-lg font-semibold leading-snug text-gorev-snow">
+                    “Kadıköy’de hafta içi akşam React düzeltmesi (2–3 saat)”
                   </p>
                 </div>
-                <span className="rounded-full bg-gorev-yellow-400/15 px-3 py-1 text-xs font-semibold text-gorev-yellow-300">
-                  Tahmini talep: yüksek
+                <span className="inline-flex w-fit shrink-0 rounded-full bg-gorev-yellow-400/15 px-3 py-1 text-xs font-semibold text-gorev-yellow-300">
+                  Tahmini talep: orta–yüksek
                 </span>
               </div>
 
@@ -63,22 +66,22 @@ export function AiPricingSection() {
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-gorev-muted">Önerilen aralık</dt>
                   <dd className="font-semibold text-gorev-green-400">
-                    ₺1.600 — ₺2.400
+                    ₺3.800 — ₺5.200
                   </dd>
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-gorev-muted">Bölge ortalaması</dt>
-                  <dd className="font-medium text-gorev-snow">₺1.950</dd>
+                  <dd className="font-medium text-gorev-snow">₺4.450</dd>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <dt className="text-gorev-muted">Tamamlanma süresi</dt>
-                  <dd className="font-medium text-gorev-snow">~3,5 saat</dd>
+                  <dt className="text-gorev-muted">Tahmini tamamlanma</dt>
+                  <dd className="font-medium text-gorev-snow">~2,5 saat</dd>
                 </div>
               </dl>
 
               <p className="mt-6 rounded-xl border border-gorev-navy-800 bg-gorev-navy-950/60 px-4 py-3 text-xs leading-relaxed text-gorev-muted">
-                Bu kart demo veridir. Canlı üründe model; anonimleştirilmiş geçmiş
-                işler ve güncel talep sinyalleriyle güncellenir.
+                Kart demo verisidir. Canlı sistemde model; anonimleştirilmiş iş
+                geçmişi ve güncel talep sinyalleriyle güncellenir.
               </p>
             </div>
           </div>

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 
-import type { CategoryIconName } from '@/data/landing-content'
+import type { ServiceIconName } from '@/data/landing-content'
 
-const icons: Record<CategoryIconName, ReactNode> = {
+const icons: Record<ServiceIconName, ReactNode> = {
   sparkles: (
     <path
       strokeLinecap="round"
@@ -15,13 +15,6 @@ const icons: Record<CategoryIconName, ReactNode> = {
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6.75m-9 0H3.375A1.125 1.125 0 0 1 2.25 15.75v-3.9A1.125 1.125 0 0 1 3.375 10.5h.75m0 0H9m-5.25 0V9.75c0-1.036.84-1.875 1.875-1.875h1.5c1.036 0 1.875.84 1.875 1.875v.75M8.25 18.75h4.5m-4.5 0a1.5 1.5 0 0 1-3 0m7.5 0a1.5 1.5 0 0 1-3 0M18 10.5h-2.25A2.25 2.25 0 0 0 13.5 8.25v-1.5m0 0V6A2.25 2.25 0 0 1 15.75 3.75h1.5A2.25 2.25 0 0 1 19.5 6v1.5m-6 0h6"
-    />
-  ),
-  wrench: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655-5.653a2.548 2.548 0 0 1 3.07-3.07l5.653 4.655M11.42 15.17l-1.49-1.49M3.75 3.75l1.5 1.5"
     />
   ),
   palette: (
@@ -38,16 +31,23 @@ const icons: Record<CategoryIconName, ReactNode> = {
       d="M12 6.042A8.967 8.967 0 0 0 6.75 7.5v9.75a8.967 8.967 0 0 0 3 1.042 8.967 8.967 0 0 0 6 0 8.967 8.967 0 0 0 3-1.042V7.5a8.967 8.967 0 0 0-6-1.458Z"
     />
   ),
-  leaf: (
+  code: (
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
-      d="M12 21c-4.97 0-9-4.03-9-9 0-6 9-12 9-12s9 6 9 12c0 4.97-4.03 9-9 9Zm0 0c2.34 0 4.24-2.01 4.24-4.5S14.34 12 12 12s-4.24 2.01-4.24 4.5S9.66 21 12 21Z"
+      d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"
+    />
+  ),
+  heart: (
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733C11.285 4.866 9.623 3.75 7.688 3.75 5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
     />
   ),
 }
 
-export function CategoryIcon({ name }: { name: CategoryIconName }) {
+export function ServiceCategoryIcon({ name }: { name: ServiceIconName }) {
   return (
     <svg
       className="h-7 w-7 shrink-0 text-gorev-yellow-400"
