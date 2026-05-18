@@ -1,39 +1,56 @@
 import { type FormEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
+import { AuthAlert } from '@/components/auth/AuthAlert'
 import { AuthCard } from '@/components/auth/AuthCard'
 import { Button } from '@/components/ui/Button'
 import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
+import { useAuth } from '@/hooks/useAuth'
 import {
   type FieldErrors,
   type LoginFormValues,
   validateLogin,
 } from '@/lib/auth-forms'
 
-function delay(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
+type LocationState = {
+  from?: { pathname?: string }
 }
 
 export function LoginPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { signIn } = useAuth()
+
+  const redirectTo =
+    (location.state as LocationState | null)?.from?.pathname ?? '/dashboard'
+
   const [values, setValues] = useState<LoginFormValues>({
     email: '',
     password: '',
   })
   const [errors, setErrors] = useState<FieldErrors<LoginFormValues>>({})
+  const [formError, setFormError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setFormError(null)
+
     const next = validateLogin(values)
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
     setLoading(true)
-    await delay(950)
+    const { error } = await signIn(values.email, values.password)
     setLoading(false)
+
+    if (error) {
+      setFormError(error)
+      return
+    }
+
+    navigate(redirectTo, { replace: true })
   }
 
   return (
@@ -42,6 +59,8 @@ export function LoginPage() {
       description="Hesabına giriş yap ve görevlerini yönet."
     >
       <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+        {formError ? <AuthAlert message={formError} variant="error" /> : null}
+
         <TextField
           label="E-posta"
           name="email"
@@ -55,6 +74,7 @@ export function LoginPage() {
           }
           error={errors.email}
           required
+          disabled={loading}
         />
         <PasswordField
           label="Şifre"
@@ -67,6 +87,7 @@ export function LoginPage() {
           }
           error={errors.password}
           required
+          disabled={loading}
         />
 
         <div className="flex justify-end">

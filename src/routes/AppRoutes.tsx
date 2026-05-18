@@ -1,7 +1,12 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
+import { GuestRoute } from '@/components/auth/GuestRoute'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AuthLayout } from '@/layouts/AuthLayout'
+import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { MainLayout } from '@/layouts/MainLayout'
+import { DashboardPage } from '@/pages/DashboardPage'
+import { DashboardPlaceholderPage } from '@/pages/DashboardPlaceholderPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
@@ -14,10 +19,56 @@ export function AppRoutes() {
         <Route index element={<HomePage />} />
       </Route>
 
-      <Route element={<AuthLayout />}>
-        <Route path="giris" element={<LoginPage />} />
-        <Route path="kayit" element={<RegisterPage />} />
-        <Route path="sifremi-unuttum" element={<ForgotPasswordPage />} />
+      <Route path="login" element={<Navigate to="/giris" replace />} />
+
+      <Route element={<GuestRoute />}>
+        <Route element={<AuthLayout />}>
+          <Route path="giris" element={<LoginPage />} />
+          <Route path="kayit" element={<RegisterPage />} />
+          <Route path="sifremi-unuttum" element={<ForgotPasswordPage />} />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="dashboard" element={<DashboardLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route
+            path="gorevlerim"
+            element={
+              <DashboardPlaceholderPage
+                title="Görevlerim"
+                description="Tüm görevlerinizi listeleyecek, filtreleyecek ve yöneteceğiniz ekran burada olacak."
+              />
+            }
+          />
+          <Route
+            path="hizmetler"
+            element={
+              <DashboardPlaceholderPage
+                title="Hizmetler"
+                description="Sunduğunuz hizmet paketleri ve aldığınız hizmetler bu bölümde yer alacak."
+              />
+            }
+          />
+          <Route
+            path="mesajlar"
+            element={
+              <DashboardPlaceholderPage
+                title="Mesajlar"
+                description="Teklifler ve sohbetler için birleşik mesajlaşma arayüzü yakında."
+              />
+            }
+          />
+          <Route
+            path="profil"
+            element={
+              <DashboardPlaceholderPage
+                title="Profil"
+                description="Hesap bilgileri, doğrulama ve bildirim tercihleri burada yönetilecek."
+              />
+            }
+          />
+        </Route>
       </Route>
     </Routes>
   )

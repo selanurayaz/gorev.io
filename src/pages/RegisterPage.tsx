@@ -1,23 +1,22 @@
 import { type FormEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
+import { AuthAlert } from '@/components/auth/AuthAlert'
 import { AuthCard } from '@/components/auth/AuthCard'
 import { Button } from '@/components/ui/Button'
 import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
+import { useAuth } from '@/hooks/useAuth'
 import {
   type FieldErrors,
   type RegisterFormValues,
   validateRegister,
 } from '@/lib/auth-forms'
 
-function delay(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
-
 export function RegisterPage() {
+  const navigate = useNavigate()
+  const { signUp } = useAuth()
+
   const [values, setValues] = useState<RegisterFormValues>({
     fullName: '',
     email: '',
@@ -25,17 +24,40 @@ export function RegisterPage() {
     confirmPassword: '',
   })
   const [errors, setErrors] = useState<FieldErrors<RegisterFormValues>>({})
+  const [formError, setFormError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setFormError(null)
+    setSuccessMessage(null)
+
     const next = validateRegister(values)
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
     setLoading(true)
-    await delay(1100)
+    const { error, needsEmailConfirmation } = await signUp({
+      email: values.email,
+      password: values.password,
+      fullName: values.fullName,
+    })
     setLoading(false)
+
+    if (error) {
+      setFormError(error)
+      return
+    }
+
+    if (needsEmailConfirmation) {
+      setSuccessMessage(
+        'Hesabın oluşturuldu. Giriş yapmadan önce e-posta adresine gelen doğrulama bağlantısına tıkla.',
+      )
+      return
+    }
+
+    navigate('/dashboard', { replace: true })
   }
 
   return (
@@ -44,6 +66,11 @@ export function RegisterPage() {
       description="Dakikalar içinde hesap oluştur; görev ver veya hizmet sun."
     >
       <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+        {formError ? <AuthAlert message={formError} variant="error" /> : null}
+        {successMessage ? (
+          <AuthAlert message={successMessage} variant="success" />
+        ) : null}
+
         <TextField
           label="Ad soyad"
           name="fullName"
@@ -55,6 +82,7 @@ export function RegisterPage() {
           }
           error={errors.fullName}
           required
+          disabled={loading || Boolean(successMessage)}
         />
         <TextField
           label="E-posta"
@@ -69,6 +97,7 @@ export function RegisterPage() {
           }
           error={errors.email}
           required
+          disabled={loading || Boolean(successMessage)}
         />
         <PasswordField
           label="Şifre"
@@ -82,6 +111,7 @@ export function RegisterPage() {
           }
           error={errors.password}
           required
+          disabled={loading || Boolean(successMessage)}
         />
         <PasswordField
           label="Şifre tekrar"
@@ -94,6 +124,7 @@ export function RegisterPage() {
           }
           error={errors.confirmPassword}
           required
+          disabled={loading || Boolean(successMessage)}
         />
 
         <p className="text-xs leading-relaxed text-gorev-muted">
@@ -114,13 +145,22 @@ export function RegisterPage() {
           ’ni kabul etmiş olursun.
         </p>
 
-        <Button
-          type="submit"
-          className="min-h-12 w-full justify-center text-base"
-          loading={loading}
-        >
-          Hesap oluştur
-        </Button>
+        {!successMessage ? (
+          <Button
+            type="submit"
+            className="min-h-12 w-full justify-center text-base"
+            loading={loading}
+          >
+            Hesap oluştur
+          </Button>
+        ) : (
+          <Link
+            to="/giris"
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/50 text-sm font-semibold text-gorev-snow transition hover:border-gorev-yellow-400/45 hover:bg-gorev-navy-900"
+          >
+            Giriş sayfasına git
+          </Link>
+        )}
       </form>
 
       <p className="mt-8 text-center text-sm text-gorev-muted">
