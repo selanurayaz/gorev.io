@@ -1,10 +1,9 @@
-import { useAuth } from '@/hooks/useAuth'
+import { ProfileLoadState } from '@/components/dashboard/ProfileLoadState'
+import { useProfile } from '@/hooks/useProfile'
 import { composeButtonClassName } from '@/lib/button-styles'
-import { getUserDisplayName } from '@/lib/user-display'
 
 export function DashboardWelcome() {
-  const { user } = useAuth()
-  const displayName = getUserDisplayName(user)
+  const { displayName, isLoading, error, refetch } = useProfile()
 
   const hour = new Date().getHours()
   const greeting =
@@ -21,18 +20,33 @@ export function DashboardWelcome() {
         aria-hidden
       />
       <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gorev-green-400">
             Kontrol paneli
           </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-gorev-snow sm:text-3xl">
-            {greeting}, {displayName}
-          </h2>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-gorev-muted sm:text-base">
-            Bugün 3 aktif görevin var. Yeni teklifler ve mesajlar için özet
-            aşağıda — hızlıca aksiyon alabilirsin.
-          </p>
+
+          {isLoading ? (
+            <div
+              className="mt-2 h-9 w-56 max-w-full animate-pulse rounded-lg bg-gorev-navy-800"
+              aria-hidden
+            />
+          ) : (
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-gorev-snow sm:text-3xl">
+              {greeting},{' '}
+              <span className="text-gorev-yellow-300">{displayName}</span>
+            </h2>
+          )}
+
+          <ProfileLoadState error={error} onRetry={refetch} />
+
+          {!isLoading ? (
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-gorev-muted sm:text-base">
+              Bugün 3 aktif görevin var. Yeni teklifler ve mesajlar için özet
+              aşağıda — hızlıca aksiyon alabilirsin.
+            </p>
+          ) : null}
         </div>
+
         <div className="flex flex-col gap-2 sm:flex-row sm:shrink-0">
           <button
             type="button"

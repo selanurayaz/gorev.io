@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar'
 import { DashboardTopbar } from '@/components/dashboard/DashboardTopbar'
+import { ProfileProvider } from '@/contexts/ProfileProvider'
 import { cn } from '@/lib/utils'
 
 const pageTitles: Record<string, { title: string; subtitle?: string }> = {
@@ -119,16 +120,18 @@ export function DashboardLayout() {
         />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar
-          title={meta.title}
-          subtitle={meta.subtitle}
-          onMenuClick={() => setSidebarOpen(true)}
-        />
-        <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-          <Outlet />
-        </main>
-      </div>
+      <ProfileProvider>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <DashboardTopbar
+            title={meta.title}
+            subtitle={meta.subtitle}
+            onMenuClick={() => setSidebarOpen(true)}
+          />
+          <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            <Outlet />
+          </main>
+        </div>
+      </ProfileProvider>
     </div>
   )
 }

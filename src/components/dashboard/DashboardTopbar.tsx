@@ -1,5 +1,4 @@
-import { useAuth } from '@/hooks/useAuth'
-import { getUserDisplayName } from '@/lib/user-display'
+import { useProfile } from '@/hooks/useProfile'
 import { cn } from '@/lib/utils'
 
 type DashboardTopbarProps = {
@@ -32,8 +31,7 @@ export function DashboardTopbar({
   subtitle,
   onMenuClick,
 }: DashboardTopbarProps) {
-  const { user } = useAuth()
-  const displayName = getUserDisplayName(user)
+  const { user, displayName, isLoading: profileLoading } = useProfile()
 
   return (
     <header className="sticky top-0 z-30 border-b border-gorev-navy-800 bg-gorev-navy-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-gorev-navy-950/75">
@@ -76,7 +74,9 @@ export function DashboardTopbar({
             title={user?.email ?? undefined}
           >
             <span className="hidden sm:inline">Merhaba, </span>
-            <span className="text-gorev-yellow-400">{displayName}</span>
+            <span className="text-gorev-yellow-400">
+              {profileLoading ? '…' : displayName}
+            </span>
           </div>
         </div>
       </div>
