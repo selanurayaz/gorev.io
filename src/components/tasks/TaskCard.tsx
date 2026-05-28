@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { formatCityLabel } from '@/lib/cities'
 import {
   formatTaskBudgetRange,
@@ -12,18 +14,27 @@ type TaskCardProps = {
   task: TaskListItem
   ownerName?: string | null
   className?: string
+  /** Verilirse kart tıklanabilir görev detayına gider. */
+  detailHref?: string
 }
 
-export function TaskCard({ task, ownerName, className }: TaskCardProps) {
+export function TaskCard({
+  task,
+  ownerName,
+  className,
+  detailHref,
+}: TaskCardProps) {
   const categoryLabel = task.category_name ?? 'Kategori belirtilmedi'
   const cityLabel = formatCityLabel(task.city)
 
   const ownerLabel = ownerName?.trim() || null
 
-  return (
+  const article = (
     <article
       className={cn(
-        'flex h-full flex-col rounded-2xl border border-gorev-navy-800 bg-gradient-to-b from-gorev-navy-900/80 to-gorev-navy-950/90 p-5 shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset] transition duration-200 hover:-translate-y-0.5 hover:border-gorev-navy-700 hover:shadow-lg hover:shadow-black/25',
+        'flex h-full flex-col rounded-2xl border border-gorev-navy-800 bg-gradient-to-b from-gorev-navy-900/80 to-gorev-navy-950/90 p-5 shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset] transition duration-200',
+        detailHref &&
+          'hover:-translate-y-0.5 hover:border-gorev-navy-700 hover:shadow-lg hover:shadow-black/25',
         className,
       )}
     >
@@ -70,4 +81,17 @@ export function TaskCard({ task, ownerName, className }: TaskCardProps) {
       </footer>
     </article>
   )
+
+  if (detailHref) {
+    return (
+      <Link
+        to={detailHref}
+        className="group block h-full rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gorev-yellow-400"
+      >
+        {article}
+      </Link>
+    )
+  }
+
+  return article
 }

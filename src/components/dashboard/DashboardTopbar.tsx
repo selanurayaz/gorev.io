@@ -1,3 +1,4 @@
+import { NotificationBell } from '@/components/notifications/NotificationBell'
 import { useProfile } from '@/hooks/useProfile'
 import { cn } from '@/lib/utils'
 
@@ -60,15 +61,7 @@ export function DashboardTopbar({
         </div>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            className="hidden rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/50 px-3 py-2 text-sm font-medium text-gorev-muted transition hover:border-gorev-yellow-400/35 hover:text-gorev-snow sm:inline-flex"
-          >
-            Bildirimler
-            <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gorev-yellow-400 px-1.5 text-[10px] font-bold text-gorev-navy-950">
-              3
-            </span>
-          </button>
+          <NotificationBell />
           <div
             className="rounded-full bg-gradient-to-br from-gorev-navy-800 to-gorev-navy-900 px-3 py-1.5 text-sm font-semibold text-gorev-snow ring-1 ring-gorev-navy-700"
             title={user?.email ?? undefined}

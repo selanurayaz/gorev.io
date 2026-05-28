@@ -12,6 +12,7 @@ export const dashboardNavItems: DashboardNavItem[] = [
   { to: '/kesfet', label: 'Görev Keşfet', icon: 'discover' },
   { to: '/dashboard/gorevlerim', label: 'Görevlerim', icon: 'tasks' },
   { to: '/dashboard/hizmetler', label: 'Hizmetler', icon: 'services' },
+  { to: '/dashboard/teklifler', label: 'Teklifler', icon: 'offers' },
   { to: '/dashboard/mesajlar', label: 'Mesajlar', icon: 'messages' },
   { to: '/dashboard/profil', label: 'Profil', icon: 'profile' },
 ]

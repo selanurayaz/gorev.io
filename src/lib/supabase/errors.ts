@@ -72,3 +72,52 @@ export function formatTaskFetchError(error: PostgrestError): string {
   }
   return 'Görevleriniz yüklenemedi. Lütfen sayfayı yenileyin.'
 }
+
+export function formatOfferCreateError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Teklif gönderilemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Teklifiniz kaydedilemedi. Lütfen tekrar deneyin.'
+}
+
+export function formatOfferFetchError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Teklifler yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Teklifler yüklenemedi. Lütfen sayfayı yenileyin.'
+}
+
+export function formatOfferUpdateError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Teklif güncellenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'İşlem tamamlanamadı. Lütfen tekrar deneyin.'
+}
+
+export function formatMessageFetchError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Mesajlar yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Mesajlar yüklenilemedi. Lütfen sayfayı yenileyin.'
+}
+
+export function formatMessageSendError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Mesaj gönderilemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Mesajınız gönderilemedi. Lütfen tekrar deneyin.'
+}
+
+export function formatNotificationFetchError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Bildirimler yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Bildirimler yüklenemedi. Lütfen sayfayı yenileyin.'
+}
+
+export function formatNotificationUpdateError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Bildirim güncellenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Bildirim güncellenemedi. Lütfen tekrar deneyin.'
+}

@@ -10,3 +10,26 @@ export type {
   TaskListItem,
   MarketplaceTask,
 } from '@/types/task'
+
+export type {
+  Offer,
+  OfferActionResult,
+  OfferCreateInput,
+  OfferFormValues,
+  OfferListItem,
+  IncomingOfferItem,
+  SubmittedOfferItem,
+} from '@/types/offer'
+
+export type {
+  ChatMessage,
+  Conversation,
+  SendMessageInput,
+} from '@/types/message'
+
+export type {
+  AppNotification,
+  CreateNotificationInput,
+  NotificationMetadata,
+  NotificationType,
+} from '@/types/notification'

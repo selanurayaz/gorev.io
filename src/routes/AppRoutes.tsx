@@ -11,6 +11,10 @@ import { DashboardPlaceholderPage } from '@/pages/DashboardPlaceholderPage'
 import { MyTasksPage } from '@/pages/MyTasksPage'
 import { ProfileSettingsPage } from '@/pages/ProfileSettingsPage'
 import { DiscoverTasksPage } from '@/pages/DiscoverTasksPage'
+import { MessagesPage } from '@/pages/MessagesPage'
+import { NotificationsPage } from '@/pages/NotificationsPage'
+import { OffersPage } from '@/pages/OffersPage'
+import { TaskDetailPage } from '@/pages/TaskDetailPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
@@ -22,6 +26,7 @@ export function AppRoutes() {
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="kesfet" element={<DiscoverTasksPage />} />
+        <Route path="kesfet/gorev/:taskId" element={<TaskDetailPage />} />
       </Route>
 
       <Route path="login" element={<Navigate to="/giris" replace />} />
@@ -48,15 +53,9 @@ export function AppRoutes() {
               />
             }
           />
-          <Route
-            path="mesajlar"
-            element={
-              <DashboardPlaceholderPage
-                title="Mesajlar"
-                description="Teklifler ve sohbetler için birleşik mesajlaşma arayüzü yakında."
-              />
-            }
-          />
+          <Route path="teklifler" element={<OffersPage />} />
+          <Route path="mesajlar" element={<MessagesPage />} />
+          <Route path="bildirimler" element={<NotificationsPage />} />
           <Route path="profil" element={<ProfileSettingsPage />} />
         </Route>
       </Route>

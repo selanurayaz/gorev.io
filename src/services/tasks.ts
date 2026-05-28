@@ -2,6 +2,8 @@ import type { PostgrestError } from '@supabase/supabase-js'
 
 import {
   enrichTaskListItem,
+  enrichMarketplaceTask,
+  normalizeMarketplaceTaskRow,
   normalizeTaskListRow,
   normalizeTaskRow,
 } from '@/lib/task-mapper'
@@ -14,7 +16,9 @@ import {
 } from '@/lib/supabase/errors'
 import { getAuthSessionContext } from '@/lib/supabase/session'
 import { supabase } from '@/lib/supabase/client'
-import type { Task, TaskCreateInput, TaskListItem } from '@/types/task'
+import { fetchProfileNamesByIds } from '@/services/profiles'
+import type { Task, TaskCreateInput, TaskListItem, MarketplaceTask } from '@/types/task'
+import type { TaskId } from '@/types/index'
 
 export type CreateTaskResult = {
   task: Task | null
@@ -181,4 +185,91 @@ export async function fetchMyTasks(
   }
 
   return { tasks: [], error: null }
+}
+
+export type FetchTaskDetailResult = {
+  task: MarketplaceTask | null
+  error: string | null
+}
+
+type TaskDetailQueryMode = 'full' | 'with_category' | 'plain'
+
+async function queryTaskById(
+  taskId: TaskId,
+  mode: TaskDetailQueryMode,
+): Promise<{ row: Record<string, unknown> | null; error: PostgrestError | null }> {
+  const response =
+    mode === 'full'
+      ? await supabase
+          .from('tasks')
+          .select('*, categories(name), profiles(full_name)')
+          .eq('id', taskId)
+          .maybeSingle()
+      : mode === 'with_category'
+        ? await supabase
+            .from('tasks')
+            .select('*, categories(name)')
+            .eq('id', taskId)
+            .maybeSingle()
+        : await supabase
+            .from('tasks')
+            .select('*')
+            .eq('id', taskId)
+            .maybeSingle()
+
+  if (response.error) {
+    return { row: null, error: response.error }
+  }
+
+  if (!response.data || typeof response.data !== 'object') {
+    return { row: null, error: null }
+  }
+
+  return { row: response.data as Record<string, unknown>, error: null }
+}
+
+/** Tekil görev detayı (kategori + görev sahibi adı dahil). */
+export async function fetchTaskDetailById(
+  taskId: TaskId,
+  categoryNames: Map<string, string> = new Map(),
+): Promise<FetchTaskDetailResult> {
+  const modes: TaskDetailQueryMode[] = ['full', 'with_category', 'plain']
+  let lastError: PostgrestError | null = null
+
+  for (const mode of modes) {
+    const { row, error } = await queryTaskById(taskId, mode)
+
+    if (!error) {
+      if (!row) {
+        return { task: null, error: null }
+      }
+
+      let ownerNames = new Map<string, string>()
+      let task = normalizeMarketplaceTaskRow(row, categoryNames, ownerNames)
+
+      if (task && !task.owner_name && task.customer_id) {
+        ownerNames = await fetchProfileNamesByIds([task.customer_id])
+        task = enrichMarketplaceTask(task, ownerNames)
+      }
+
+      if (import.meta.env.DEV) {
+        console.info('[tasks] detail loaded', { taskId, mode, found: Boolean(task) })
+      }
+
+      return { task, error: null }
+    }
+
+    lastError = error
+    logSupabaseError('fetchTaskDetailById', error, { mode, taskId })
+
+    if (!isPostgrestSchemaError(error)) {
+      break
+    }
+  }
+
+  if (lastError) {
+    return { task: null, error: formatTaskFetchError(lastError) }
+  }
+
+  return { task: null, error: null }
 }
