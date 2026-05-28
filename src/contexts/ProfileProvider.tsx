@@ -22,12 +22,14 @@ function useProfileState(): UseProfileResult {
     setIsFetching(true)
     setError(null)
 
-    const { profile: row, error: fetchError } = await fetchProfileByUserId(id)
+    const { profile: row, error: fetchError } = await fetchProfileByUserId(id, {
+      email: user?.email,
+    })
 
     setProfile(row)
     setError(fetchError)
     setIsFetching(false)
-  }, [])
+  }, [user?.email])
 
   const refetch = useCallback(async () => {
     if (!userId) return
@@ -42,7 +44,10 @@ function useProfileState(): UseProfileResult {
     void (async () => {
       setIsFetching(true)
       setError(null)
-      const { profile: row, error: fetchError } = await fetchProfileByUserId(userId)
+      const { profile: row, error: fetchError } = await fetchProfileByUserId(
+        userId,
+        { email: user?.email },
+      )
       if (cancelled) return
       setProfile(row)
       setError(fetchError)
@@ -52,7 +57,7 @@ function useProfileState(): UseProfileResult {
     return () => {
       cancelled = true
     }
-  }, [userId, authLoading])
+  }, [userId, user?.email, authLoading])
 
   const activeProfile = userId ? profile : null
   const activeError = userId ? error : null

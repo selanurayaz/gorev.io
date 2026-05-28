@@ -7,6 +7,7 @@ import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { MainLayout } from '@/layouts/MainLayout'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { DashboardPlaceholderPage } from '@/pages/DashboardPlaceholderPage'
+import { ProfileSettingsPage } from '@/pages/ProfileSettingsPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
@@ -59,15 +60,7 @@ export function AppRoutes() {
               />
             }
           />
-          <Route
-            path="profil"
-            element={
-              <DashboardPlaceholderPage
-                title="Profil"
-                description="Hesap bilgileri, doğrulama ve bildirim tercihleri burada yönetilecek."
-              />
-            }
-          />
+          <Route path="profil" element={<ProfileSettingsPage />} />
         </Route>
       </Route>
     </Routes>
