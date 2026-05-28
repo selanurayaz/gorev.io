@@ -5,6 +5,7 @@ import {
   normalizeTaskListRow,
   normalizeTaskRow,
 } from '@/lib/task-mapper'
+import { sortTasksNewestFirst } from '@/lib/task-list-utils'
 import {
   formatTaskCreateError,
   formatTaskFetchError,
@@ -123,15 +124,6 @@ function mapTaskRows(
   return rows
     .map((row) => normalizeTaskListRow(row, categoryNames))
     .filter((task): task is TaskListItem => task !== null)
-}
-
-function sortTasksNewestFirst(tasks: TaskListItem[]): TaskListItem[] {
-  return [...tasks].sort((a, b) => {
-    const aTime = a.created_at ? new Date(a.created_at).getTime() : 0
-    const bTime = b.created_at ? new Date(b.created_at).getTime() : 0
-    if (bTime !== aTime) return bTime - aTime
-    return b.id.localeCompare(a.id)
-  })
 }
 
 /**

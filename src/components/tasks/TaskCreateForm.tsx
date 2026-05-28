@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { ComboboxField } from '@/components/ui/ComboboxField'
 import { Spinner } from '@/components/ui/Spinner'
 import { TextareaField } from '@/components/ui/TextareaField'
+import { CitySelectField } from '@/components/ui/CitySelectField'
 import { TextField } from '@/components/ui/TextField'
 import { useCategories } from '@/hooks/useCategories'
 import { useCreateTask } from '@/hooks/useCreateTask'
@@ -123,16 +124,15 @@ export function TaskCreateForm() {
         emptyMessage="Bu aramayla eşleşen kategori yok."
       />
 
-      <TextField
+      <CitySelectField
         label="Şehir"
         name="city"
-        autoComplete="address-level2"
-        placeholder="İstanbul"
         value={form.city}
-        onChange={(e) => setField('city', e.target.value)}
+        onValueChange={(value) => setField('city', value)}
         error={fieldErrors.city}
         required
         disabled={formDisabled}
+        placeholder="İl seçin…"
       />
 
       <div className="grid gap-5 sm:grid-cols-2">

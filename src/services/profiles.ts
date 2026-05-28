@@ -32,6 +32,12 @@ function buildProfilePayload(input: ProfileUpdateInput) {
   }
 }
 
+function readProfileDisplayName(row: Record<string, unknown>): string | null {
+  const name = row.full_name ?? row.display_name ?? row.name
+  if (typeof name === 'string' && name.trim()) return name.trim()
+  return null
+}
+
 async function queryProfileRow(
   column: ProfileIdColumn,
   userId: string,
@@ -191,4 +197,58 @@ export async function updateProfileByUserId(
   }
 
   return { profile, error: null }
+}
+
+/** Marketplace için görev sahibi adlarını toplu getirir. */
+export async function fetchProfileNamesByIds(
+  userIds: string[],
+): Promise<Map<string, string>> {
+  const uniqueIds = [...new Set(userIds.filter(Boolean))]
+  if (uniqueIds.length === 0) return new Map()
+
+  const nameMap = new Map<string, string>()
+
+  const assignRows = (rows: unknown) => {
+    if (!Array.isArray(rows)) return
+    for (const row of rows) {
+      if (!row || typeof row !== 'object') continue
+      const record = row as Record<string, unknown>
+      const name = readProfileDisplayName(record)
+      if (!name) continue
+
+      const id = record.id != null ? String(record.id) : null
+      const userId =
+        record.user_id != null ? String(record.user_id) : null
+
+      if (id) nameMap.set(id, name)
+      if (userId) nameMap.set(userId, name)
+    }
+  }
+
+  const byId = await supabase
+    .from('profiles')
+    .select('id, user_id, full_name, display_name, name')
+    .in('id', uniqueIds)
+
+  if (!byId.error) {
+    assignRows(byId.data)
+  } else {
+    logSupabaseError('fetchProfileNamesByIds.id', byId.error)
+  }
+
+  const missing = uniqueIds.filter((id) => !nameMap.has(id))
+  if (missing.length > 0) {
+    const byUserId = await supabase
+      .from('profiles')
+      .select('id, user_id, full_name, display_name, name')
+      .in('user_id', missing)
+
+    if (!byUserId.error) {
+      assignRows(byUserId.data)
+    } else {
+      logSupabaseError('fetchProfileNamesByIds.user_id', byUserId.error)
+    }
+  }
+
+  return nameMap
 }

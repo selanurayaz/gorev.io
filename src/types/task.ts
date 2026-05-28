@@ -19,6 +19,11 @@ export type TaskListItem = Task & {
   category_name: string | null
 }
 
+/** Keşfet / marketplace — görev sahibi adı dahil. */
+export type MarketplaceTask = TaskListItem & {
+  owner_name: string | null
+}
+
 export type TaskFormValues = {
   title: string
   description: string

@@ -9,6 +9,7 @@ export type DashboardNavItem = {
 
 export const dashboardNavItems: DashboardNavItem[] = [
   { to: '/dashboard', label: 'Ana Sayfa', icon: 'home', end: true },
+  { to: '/kesfet', label: 'Görev Keşfet', icon: 'discover' },
   { to: '/dashboard/gorevlerim', label: 'Görevlerim', icon: 'tasks' },
   { to: '/dashboard/hizmetler', label: 'Hizmetler', icon: 'services' },
   { to: '/dashboard/mesajlar', label: 'Mesajlar', icon: 'messages' },

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useProfile } from '@/hooks/useProfile'
+import { resolveTurkishCityName } from '@/lib/cities'
 import {
   emptyTaskForm,
   validateTaskForm,
@@ -38,10 +39,15 @@ export function useCreateTask() {
     let cancelled = false
 
     void (async () => {
+      const resolvedCity = resolveTurkishCityName(profile.city)
       if (cancelled) return
-      setForm((prev) =>
-        prev.city.trim() ? prev : { ...prev, city: profile.city ?? '' },
-      )
+
+      if (resolvedCity) {
+        setForm((prev) =>
+          prev.city.trim() ? prev : { ...prev, city: resolvedCity },
+        )
+      }
+
       setCityPrefilled(true)
     })()
 

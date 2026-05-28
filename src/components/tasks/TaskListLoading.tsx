@@ -1,7 +1,11 @@
-export function TaskListLoading() {
+type TaskListLoadingProps = {
+  className?: string
+}
+
+export function TaskListLoading({ className }: TaskListLoadingProps = {}) {
   return (
     <div
-      className="grid gap-4 sm:grid-cols-2"
+      className={className ?? 'grid gap-4 sm:grid-cols-2'}
       role="status"
       aria-live="polite"
       aria-label="Görevler yükleniyor"

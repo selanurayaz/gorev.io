@@ -1,3 +1,4 @@
+import { isTurkishCityName } from '@/lib/cities'
 import type { TaskCreateInput, TaskFormValues } from '@/types/task'
 
 export const emptyTaskForm: TaskFormValues = {
@@ -41,7 +42,9 @@ export function validateTaskForm(values: TaskFormValues): TaskFormErrors {
   }
 
   if (!values.city.trim()) {
-    errors.city = 'Şehir gerekli.'
+    errors.city = 'Şehir seçin.'
+  } else if (!isTurkishCityName(values.city)) {
+    errors.city = 'Listeden geçerli bir il seçin.'
   }
 
   const budgetMin = parseBudget(values.budget_min)

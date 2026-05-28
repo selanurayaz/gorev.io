@@ -1,3 +1,4 @@
+import { isTurkishCityName, resolveTurkishCityName } from '@/lib/cities'
 import type { Profile, ProfileFormValues } from '@/types/profile'
 
 export const emptyProfileForm: ProfileFormValues = {
@@ -10,9 +11,11 @@ export const emptyProfileForm: ProfileFormValues = {
 export function profileToFormValues(profile: Profile | null): ProfileFormValues {
   if (!profile) return { ...emptyProfileForm }
 
+  const city = resolveTurkishCityName(profile.city) ?? ''
+
   return {
     full_name: profile.full_name ?? '',
-    city: profile.city ?? '',
+    city,
     role: profile.role ?? '',
     bio: profile.bio ?? '',
   }
@@ -31,6 +34,12 @@ export function validateProfileForm(
 
   if (values.bio.length > 500) {
     errors.bio = 'Biyografi en fazla 500 karakter olabilir.'
+  }
+
+  if (!values.city) {
+    errors.city = 'Şehir seçin.'
+  } else if (!isTurkishCityName(values.city)) {
+    errors.city = 'Listeden geçerli bir il seçin.'
   }
 
   return errors

@@ -8,4 +8,5 @@ export type {
   TaskCreateInput,
   TaskFormValues,
   TaskListItem,
+  MarketplaceTask,
 } from '@/types/task'

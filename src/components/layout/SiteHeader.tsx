@@ -70,6 +70,9 @@ export function SiteHeader() {
           className="hidden items-center gap-8 lg:flex"
           aria-label="Ana menü"
         >
+          <Link to="/kesfet" className={linkClass}>
+            Görev Keşfet
+          </Link>
           {NAV_LINKS.map((item) => (
             <a key={item.href} href={item.href} className={linkClass}>
               {item.label}
@@ -132,6 +135,13 @@ export function SiteHeader() {
         )}
       >
         <Container className="flex flex-col gap-1 py-4">
+          <Link
+            to="/kesfet"
+            className="rounded-xl px-3 py-3 text-base font-medium text-gorev-snow transition hover:bg-gorev-navy-900"
+            onClick={() => setMenuOpen(false)}
+          >
+            Görev Keşfet
+          </Link>
           {NAV_LINKS.map((item) => (
             <a
               key={item.href}

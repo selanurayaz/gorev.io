@@ -10,6 +10,7 @@ import { CreateTaskPage } from '@/pages/CreateTaskPage'
 import { DashboardPlaceholderPage } from '@/pages/DashboardPlaceholderPage'
 import { MyTasksPage } from '@/pages/MyTasksPage'
 import { ProfileSettingsPage } from '@/pages/ProfileSettingsPage'
+import { DiscoverTasksPage } from '@/pages/DiscoverTasksPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
@@ -20,6 +21,7 @@ export function AppRoutes() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="kesfet" element={<DiscoverTasksPage />} />
       </Route>
 
       <Route path="login" element={<Navigate to="/giris" replace />} />

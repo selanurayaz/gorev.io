@@ -4,6 +4,7 @@ import { AuthAlert } from '@/components/auth/AuthAlert'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import { TextareaField } from '@/components/ui/TextareaField'
+import { CitySelectField } from '@/components/ui/CitySelectField'
 import { TextField } from '@/components/ui/TextField'
 import { useProfileSettings } from '@/hooks/useProfileSettings'
 
@@ -85,15 +86,14 @@ export function ProfileSettingsForm() {
         disabled={isSaving}
       />
 
-      <TextField
+      <CitySelectField
         label="Şehir"
         name="city"
-        autoComplete="address-level2"
-        placeholder="İstanbul"
         value={form.city}
-        onChange={(e) => setField('city', e.target.value)}
+        onValueChange={(value) => setField('city', value)}
         error={fieldErrors.city}
         disabled={isSaving}
+        placeholder="İl seçin…"
       />
 
       <TextField

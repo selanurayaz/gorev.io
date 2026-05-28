@@ -1,4 +1,4 @@
-import type { Task, TaskListItem } from '@/types/task'
+import type { MarketplaceTask, Task, TaskListItem } from '@/types/task'
 
 function readEmbeddedCategoryName(
   row: Record<string, unknown>,
@@ -17,6 +17,31 @@ function readEmbeddedCategoryName(
 
   if (typeof embedded === 'object' && embedded !== null && 'name' in embedded) {
     return String((embedded as Record<string, unknown>).name)
+  }
+
+  return null
+}
+
+function readEmbeddedOwnerName(row: Record<string, unknown>): string | null {
+  const embedded = row.profiles ?? row.profile ?? row.customer
+
+  if (!embedded) return null
+
+  const readName = (obj: Record<string, unknown>) =>
+    obj.full_name ?? obj.fullName ?? obj.display_name ?? obj.name
+
+  if (Array.isArray(embedded)) {
+    const first = embedded[0]
+    if (first && typeof first === 'object') {
+      const name = readName(first as Record<string, unknown>)
+      return name != null ? String(name).trim() || null : null
+    }
+    return null
+  }
+
+  if (typeof embedded === 'object' && embedded !== null) {
+    const name = readName(embedded as Record<string, unknown>)
+    return name != null ? String(name).trim() || null : null
   }
 
   return null
@@ -80,5 +105,32 @@ export function normalizeTaskListRow(
     task,
     categoryNames,
     readEmbeddedCategoryName(row),
+  )
+}
+
+export function enrichMarketplaceTask(
+  task: TaskListItem,
+  ownerNames: Map<string, string>,
+  embeddedOwnerName?: string | null,
+): MarketplaceTask {
+  const owner_name =
+    embeddedOwnerName ??
+    (task.customer_id ? ownerNames.get(task.customer_id) ?? null : null)
+
+  return { ...task, owner_name }
+}
+
+export function normalizeMarketplaceTaskRow(
+  row: Record<string, unknown>,
+  categoryNames: Map<string, string>,
+  ownerNames: Map<string, string> = new Map(),
+): MarketplaceTask | null {
+  const listItem = normalizeTaskListRow(row, categoryNames)
+  if (!listItem) return null
+
+  return enrichMarketplaceTask(
+    listItem,
+    ownerNames,
+    readEmbeddedOwnerName(row),
   )
 }
