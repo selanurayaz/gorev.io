@@ -51,3 +51,24 @@ export function formatProfileSaveError(error: PostgrestError): string {
   }
   return 'Profil güncellenemedi. Lütfen tekrar deneyin.'
 }
+
+export function formatCategoryFetchError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Kategoriler yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Kategoriler yüklenemedi. Lütfen sayfayı yenileyin.'
+}
+
+export function formatTaskCreateError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Görev oluşturulamadı (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Görev kaydedilemedi. Lütfen bilgileri kontrol edip tekrar deneyin.'
+}
+
+export function formatTaskFetchError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Görevler yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Görevleriniz yüklenemedi. Lütfen sayfayı yenileyin.'
+}

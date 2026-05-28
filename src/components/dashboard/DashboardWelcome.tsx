@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { ProfileLoadState } from '@/components/dashboard/ProfileLoadState'
 import { useProfile } from '@/hooks/useProfile'
 import { composeButtonClassName } from '@/lib/button-styles'
@@ -48,15 +50,15 @@ export function DashboardWelcome() {
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:shrink-0">
-          <button
-            type="button"
+          <Link
+            to="/dashboard/gorev-olustur"
             className={composeButtonClassName(
               'primary',
               'min-h-11 justify-center px-6',
             )}
           >
             Yeni görev oluştur
-          </button>
+          </Link>
           <button
             type="button"
             className={composeButtonClassName(

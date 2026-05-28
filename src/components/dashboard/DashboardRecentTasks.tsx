@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { recentTasks } from '@/data/dashboard-content'
 
 import { DashboardCard } from '@/components/dashboard/DashboardCard'
@@ -16,12 +18,12 @@ export function DashboardRecentTasks() {
     <DashboardCard
       title="Son görevler"
       action={
-        <button
-          type="button"
+        <Link
+          to="/dashboard/gorevlerim"
           className="text-sm font-medium text-gorev-yellow-400 transition hover:text-gorev-yellow-300"
         >
           Tümünü gör
-        </button>
+        </Link>
       }
     >
       <ul className="divide-y divide-gorev-navy-800">

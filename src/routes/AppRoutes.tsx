@@ -6,7 +6,9 @@ import { AuthLayout } from '@/layouts/AuthLayout'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { MainLayout } from '@/layouts/MainLayout'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { CreateTaskPage } from '@/pages/CreateTaskPage'
 import { DashboardPlaceholderPage } from '@/pages/DashboardPlaceholderPage'
+import { MyTasksPage } from '@/pages/MyTasksPage'
 import { ProfileSettingsPage } from '@/pages/ProfileSettingsPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { HomePage } from '@/pages/HomePage'
@@ -33,15 +35,8 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardPage />} />
-          <Route
-            path="gorevlerim"
-            element={
-              <DashboardPlaceholderPage
-                title="Görevlerim"
-                description="Tüm görevlerinizi listeleyecek, filtreleyecek ve yöneteceğiniz ekran burada olacak."
-              />
-            }
-          />
+          <Route path="gorevlerim" element={<MyTasksPage />} />
+          <Route path="gorev-olustur" element={<CreateTaskPage />} />
           <Route
             path="hizmetler"
             element={
