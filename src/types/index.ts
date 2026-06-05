@@ -1,6 +1,7 @@
 /** Shared domain identifiers — extend as features land. */
 export type UserId = string
 export type TaskId = string
+export type ServiceId = string
 
 export type { ServiceCategory } from '@/types/category'
 export type {
@@ -17,6 +18,7 @@ export type {
   OfferCreateInput,
   OfferFormValues,
   OfferListItem,
+  AcceptedWorkItem,
   IncomingOfferItem,
   SubmittedOfferItem,
 } from '@/types/offer'
@@ -40,3 +42,11 @@ export type {
   DashboardStatDisplay,
   DashboardStats,
 } from '@/types/dashboard'
+
+export type {
+  MarketplaceService,
+  Service,
+  ServiceCreateInput,
+  ServiceFormValues,
+  ServiceListItem,
+} from '@/types/service'

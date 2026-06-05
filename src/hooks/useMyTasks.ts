@@ -1,17 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { fetchCategories } from '@/services/categories'
-import { fetchMyTasks } from '@/services/tasks'
-import type { TaskListItem } from '@/types/task'
-
-function buildCategoryNameMap(
-  categories: { id: string; name: string }[],
-): Map<string, string> {
-  return new Map(categories.map((category) => [category.id, category.name]))
-}
+import { fetchAcceptedWorkByProvider } from '@/services/offers'
+import type { AcceptedWorkItem } from '@/types/offer'
 
 export function useMyTasks() {
-  const [tasks, setTasks] = useState<TaskListItem[]>([])
+  const [items, setItems] = useState<AcceptedWorkItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -19,13 +12,11 @@ export function useMyTasks() {
     setIsLoading(true)
     setError(null)
 
-    const { categories } = await fetchCategories()
-    const categoryNames = buildCategoryNameMap(categories)
+    const { items: rows, error: fetchError } =
+      await fetchAcceptedWorkByProvider()
 
-    const { tasks: rows, error: tasksError } = await fetchMyTasks(categoryNames)
-
-    setTasks(rows)
-    setError(tasksError)
+    setItems(rows)
+    setError(fetchError)
     setIsLoading(false)
   }, [])
 
@@ -36,17 +27,12 @@ export function useMyTasks() {
       setIsLoading(true)
       setError(null)
 
-      const { categories } = await fetchCategories()
-      if (cancelled) return
-
-      const categoryNames = buildCategoryNameMap(categories)
-      const { tasks: rows, error: tasksError } = await fetchMyTasks(
-        categoryNames,
-      )
+      const { items: rows, error: fetchError } =
+        await fetchAcceptedWorkByProvider()
 
       if (cancelled) return
-      setTasks(rows)
-      setError(tasksError)
+      setItems(rows)
+      setError(fetchError)
       setIsLoading(false)
     })()
 
@@ -55,11 +41,11 @@ export function useMyTasks() {
     }
   }, [])
 
-  const taskCount = useMemo(() => tasks.length, [tasks])
+  const jobCount = useMemo(() => items.length, [items])
 
   return {
-    tasks,
-    taskCount,
+    items,
+    jobCount,
     isLoading,
     error,
     reload: load,

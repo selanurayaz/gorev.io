@@ -14,11 +14,19 @@ const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   },
   '/dashboard/gorevlerim': {
     title: 'Görevlerim',
-    subtitle: 'Tüm görevlerinizi yönetin',
+    subtitle: 'Kabul edilmiş işleriniz',
   },
   '/dashboard/hizmetler': {
     title: 'Hizmetler',
-    subtitle: 'Sunduğunuz ve aldığınız hizmetler',
+    subtitle: 'Sunduğunuz hizmet paketleri',
+  },
+  '/dashboard/hizmet-olustur': {
+    title: 'Hizmet Oluştur',
+    subtitle: 'Yeni hizmet ilanı yayınlayın',
+  },
+  '/dashboard/gorev-olustur': {
+    title: 'Görev Oluştur',
+    subtitle: 'Yaptırmak istediğiniz işi tanımlayın',
   },
   '/dashboard/mesajlar': {
     title: 'Mesajlar',

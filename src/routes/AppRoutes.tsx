@@ -6,8 +6,9 @@ import { AuthLayout } from '@/layouts/AuthLayout'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { MainLayout } from '@/layouts/MainLayout'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { CreateServicePage } from '@/pages/CreateServicePage'
 import { CreateTaskPage } from '@/pages/CreateTaskPage'
-import { DashboardPlaceholderPage } from '@/pages/DashboardPlaceholderPage'
+import { MyServicesPage } from '@/pages/MyServicesPage'
 import { MyTasksPage } from '@/pages/MyTasksPage'
 import { ProfileSettingsPage } from '@/pages/ProfileSettingsPage'
 import { DiscoverTasksPage } from '@/pages/DiscoverTasksPage'
@@ -44,15 +45,8 @@ export function AppRoutes() {
           <Route index element={<DashboardPage />} />
           <Route path="gorevlerim" element={<MyTasksPage />} />
           <Route path="gorev-olustur" element={<CreateTaskPage />} />
-          <Route
-            path="hizmetler"
-            element={
-              <DashboardPlaceholderPage
-                title="Hizmetler"
-                description="Sunduğunuz hizmet paketleri ve aldığınız hizmetler bu bölümde yer alacak."
-              />
-            }
-          />
+          <Route path="hizmetler" element={<MyServicesPage />} />
+          <Route path="hizmet-olustur" element={<CreateServicePage />} />
           <Route path="teklifler" element={<OffersPage />} />
           <Route path="mesajlar" element={<MessagesPage />} />
           <Route path="bildirimler" element={<NotificationsPage />} />

@@ -9,10 +9,10 @@ export function DashboardSuggestedServices() {
       title="Önerilen hizmetler"
       action={
         <Link
-          to="/kesfet"
+          to="/dashboard/hizmetler"
           className="text-sm font-medium text-gorev-yellow-400 transition hover:text-gorev-yellow-300"
         >
-          Keşfet
+          Hizmetler
         </Link>
       }
     >

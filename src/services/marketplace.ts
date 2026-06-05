@@ -1,14 +1,17 @@
 import type { PostgrestError } from '@supabase/supabase-js'
 
+import { normalizeMarketplaceServiceRow } from '@/lib/service-mapper'
 import { normalizeMarketplaceTaskRow } from '@/lib/task-mapper'
 import { sortTasksNewestFirst } from '@/lib/task-list-utils'
 import {
+  formatServiceFetchError,
   formatTaskFetchError,
   isPostgrestSchemaError,
   logSupabaseError,
 } from '@/lib/supabase/errors'
 import { supabase } from '@/lib/supabase/client'
 import { fetchProfileNamesByIds } from '@/services/profiles'
+import type { MarketplaceService } from '@/types/service'
 import type { MarketplaceTask } from '@/types/task'
 
 export type FetchMarketplaceTasksResult = {
@@ -139,4 +142,139 @@ export async function fetchOpenMarketplaceTasks(
   }
 
   return { tasks: [], error: null }
+}
+
+export type FetchMarketplaceServicesResult = {
+  services: MarketplaceService[]
+  error: string | null
+}
+
+type ActiveServiceQueryMode = 'full' | 'with_category' | 'plain'
+
+function toServiceRows(data: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(data)) return []
+  return data.filter(
+    (row): row is Record<string, unknown> =>
+      row !== null && typeof row === 'object',
+  )
+}
+
+async function queryActiveServices(
+  mode: ActiveServiceQueryMode,
+): Promise<{ rows: Record<string, unknown>[]; error: PostgrestError | null }> {
+  const response =
+    mode === 'full'
+      ? await supabase
+          .from('services')
+          .select('*, categories(name), profiles(full_name)')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+      : mode === 'with_category'
+        ? await supabase
+            .from('services')
+            .select('*, categories(name)')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+        : await supabase
+            .from('services')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+
+  if (response.error) {
+    return { rows: [], error: response.error }
+  }
+
+  return { rows: toServiceRows(response.data), error: null }
+}
+
+function mapMarketplaceServiceRows(
+  rows: Record<string, unknown>[],
+  categoryNames: Map<string, string>,
+  providerNames: Map<string, string>,
+): MarketplaceService[] {
+  return rows
+    .map((row) =>
+      normalizeMarketplaceServiceRow(row, categoryNames, providerNames),
+    )
+    .filter((service): service is MarketplaceService => service !== null)
+    .filter((service) => service.is_active)
+}
+
+async function attachMissingProviderNames(
+  services: MarketplaceService[],
+  providerNames: Map<string, string>,
+): Promise<Map<string, string>> {
+  const missingIds = [
+    ...new Set(
+      services
+        .filter((service) => !service.provider_name && service.provider_id)
+        .map((service) => service.provider_id),
+    ),
+  ].filter((id) => !providerNames.has(id))
+
+  if (missingIds.length === 0) return providerNames
+
+  const fetched = await fetchProfileNamesByIds(missingIds)
+  return new Map([...providerNames, ...fetched])
+}
+
+/**
+ * `is_active = true` olan tüm hizmetleri getirir (marketplace keşif).
+ */
+export async function fetchActiveMarketplaceServices(
+  categoryNames: Map<string, string> = new Map(),
+): Promise<FetchMarketplaceServicesResult> {
+  const modes: ActiveServiceQueryMode[] = ['full', 'with_category', 'plain']
+  let lastError: PostgrestError | null = null
+
+  for (const mode of modes) {
+    const { rows, error } = await queryActiveServices(mode)
+
+    if (!error) {
+      let providerNames = new Map<string, string>()
+      let services = mapMarketplaceServiceRows(
+        rows,
+        categoryNames,
+        providerNames,
+      )
+
+      providerNames = await attachMissingProviderNames(services, providerNames)
+      if (providerNames.size > 0) {
+        services = services.map((service) =>
+          service.provider_name
+            ? service
+            : {
+                ...service,
+                provider_name:
+                  providerNames.get(service.provider_id) ?? null,
+              },
+        )
+      }
+
+      const sorted = sortTasksNewestFirst(services)
+
+      if (import.meta.env.DEV) {
+        console.info('[marketplace] fetched active services', {
+          count: sorted.length,
+          mode,
+        })
+      }
+
+      return { services: sorted, error: null }
+    }
+
+    lastError = error
+    logSupabaseError('fetchActiveMarketplaceServices', error, { mode })
+
+    if (!isPostgrestSchemaError(error)) {
+      break
+    }
+  }
+
+  if (lastError) {
+    return { services: [], error: formatServiceFetchError(lastError) }
+  }
+
+  return { services: [], error: null }
 }

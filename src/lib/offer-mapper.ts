@@ -1,4 +1,5 @@
 import type {
+  AcceptedWorkItem,
   IncomingOfferItem,
   Offer,
   OfferListItem,
@@ -80,13 +81,43 @@ type EmbeddedTaskFields = {
   title: string | null
   city: string | null
   customer_id: string | null
+  status: string | null
+  category_name: string | null
+}
+
+function readEmbeddedCategoryName(
+  task: Record<string, unknown>,
+): string | null {
+  const embedded = task.categories ?? task.category
+
+  if (!embedded) return null
+
+  if (Array.isArray(embedded)) {
+    const first = embedded[0]
+    if (first && typeof first === 'object' && 'name' in first) {
+      return String((first as Record<string, unknown>).name)
+    }
+    return null
+  }
+
+  if (typeof embedded === 'object' && embedded !== null && 'name' in embedded) {
+    return String((embedded as Record<string, unknown>).name)
+  }
+
+  return null
 }
 
 function readEmbeddedTask(row: Record<string, unknown>): EmbeddedTaskFields {
   const embedded = row.tasks ?? row.task
 
   if (!embedded) {
-    return { title: null, city: null, customer_id: null }
+    return {
+      title: null,
+      city: null,
+      customer_id: null,
+      status: null,
+      category_name: null,
+    }
   }
 
   const read = (obj: Record<string, unknown>): EmbeddedTaskFields => ({
@@ -103,6 +134,8 @@ function readEmbeddedTask(row: Record<string, unknown>): EmbeddedTaskFields {
         : obj.user_id != null
           ? String(obj.user_id)
           : null,
+    status: obj.status != null ? String(obj.status) : null,
+    category_name: readEmbeddedCategoryName(obj),
   })
 
   if (Array.isArray(embedded)) {
@@ -110,14 +143,26 @@ function readEmbeddedTask(row: Record<string, unknown>): EmbeddedTaskFields {
     if (first && typeof first === 'object') {
       return read(first as Record<string, unknown>)
     }
-    return { title: null, city: null, customer_id: null }
+    return {
+      title: null,
+      city: null,
+      customer_id: null,
+      status: null,
+      category_name: null,
+    }
   }
 
   if (typeof embedded === 'object' && embedded !== null) {
     return read(embedded as Record<string, unknown>)
   }
 
-  return { title: null, city: null, customer_id: null }
+  return {
+    title: null,
+    city: null,
+    customer_id: null,
+    status: null,
+    category_name: null,
+  }
 }
 
 export function normalizeIncomingOfferRow(
@@ -145,5 +190,32 @@ export function normalizeSubmittedOfferRow(
     ...offer,
     task_title: task.title?.trim() || 'Görev',
     task_city: task.city?.trim() || null,
+  }
+}
+
+export function readOfferEmbeddedCustomerId(
+  row: Record<string, unknown>,
+): string | null {
+  return readEmbeddedTask(row).customer_id
+}
+
+export function normalizeAcceptedWorkRow(
+  row: Record<string, unknown>,
+  customerNames: Map<string, string> = new Map(),
+): AcceptedWorkItem | null {
+  const offer = normalizeOfferRow(row)
+  if (!offer) return null
+
+  const task = readEmbeddedTask(row)
+  const customerId = task.customer_id
+
+  return {
+    ...offer,
+    task_title: task.title?.trim() || 'Görev',
+    task_city: task.city?.trim() || null,
+    task_status: task.status,
+    task_category_name: task.category_name,
+    customer_name:
+      customerId != null ? (customerNames.get(customerId) ?? null) : null,
   }
 }

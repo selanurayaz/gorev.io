@@ -2,10 +2,12 @@ import type { PostgrestError } from '@supabase/supabase-js'
 
 import { canRespondToOffer } from '@/lib/offer-display'
 import {
+  normalizeAcceptedWorkRow,
   normalizeIncomingOfferRow,
   normalizeOfferListRow,
   normalizeOfferRow,
   normalizeSubmittedOfferRow,
+  readOfferEmbeddedCustomerId,
 } from '@/lib/offer-mapper'
 import {
   formatOfferCreateError,
@@ -23,6 +25,7 @@ import {
 } from '@/services/notification-triggers'
 import { fetchProfileNamesByIds } from '@/services/profiles'
 import type {
+  AcceptedWorkItem,
   IncomingOfferItem,
   Offer,
   OfferActionResult,
@@ -496,6 +499,176 @@ export async function fetchSubmittedOffersByProvider(): Promise<FetchSubmittedOf
   }
 
   return { offers: [], error: null }
+}
+
+export type FetchAcceptedWorkResult = {
+  items: AcceptedWorkItem[]
+  error: string | null
+}
+
+type AcceptedWorkQueryMode = 'with_task' | 'plain'
+
+async function queryAcceptedWorkOffers(
+  providerId: string,
+  mode: AcceptedWorkQueryMode,
+): Promise<{ rows: Record<string, unknown>[]; error: PostgrestError | null }> {
+  const response =
+    mode === 'with_task'
+      ? await supabase
+          .from('offers')
+          .select(
+            '*, tasks(title, city, status, customer_id, categories(name))',
+          )
+          .eq('provider_id', providerId)
+          .eq('status', 'accepted')
+          .order('created_at', { ascending: false })
+      : await supabase
+          .from('offers')
+          .select('*')
+          .eq('provider_id', providerId)
+          .eq('status', 'accepted')
+          .order('created_at', { ascending: false })
+
+  if (response.error) {
+    return { rows: [], error: response.error }
+  }
+
+  return { rows: toRows(response.data), error: null }
+}
+
+async function enrichAcceptedWorkOffers(
+  rows: Record<string, unknown>[],
+): Promise<AcceptedWorkItem[]> {
+  const taskIds = [
+    ...new Set(
+      rows
+        .map((row) => row.task_id ?? row.taskId)
+        .filter((id): id is string | number => id != null)
+        .map(String),
+    ),
+  ]
+
+  const taskById = new Map<
+    string,
+    {
+      title: string
+      city: string | null
+      status: string | null
+      customer_id: string | null
+      category_name: string | null
+    }
+  >()
+
+  if (taskIds.length > 0) {
+    const { data: tasks } = await supabase
+      .from('tasks')
+      .select('id, title, city, status, customer_id, categories(name)')
+      .in('id', taskIds)
+
+    if (Array.isArray(tasks)) {
+      for (const task of tasks) {
+        if (!task || typeof task !== 'object') continue
+        const record = task as Record<string, unknown>
+        if (record.id == null) continue
+
+        let categoryName: string | null = null
+        const embedded = record.categories ?? record.category
+        if (embedded && typeof embedded === 'object' && !Array.isArray(embedded)) {
+          const name = (embedded as Record<string, unknown>).name
+          categoryName = name != null ? String(name) : null
+        } else if (Array.isArray(embedded) && embedded[0] && typeof embedded[0] === 'object') {
+          const name = (embedded[0] as Record<string, unknown>).name
+          categoryName = name != null ? String(name) : null
+        }
+
+        taskById.set(String(record.id), {
+          title: record.title != null ? String(record.title) : 'Görev',
+          city: record.city != null ? String(record.city) : null,
+          status: record.status != null ? String(record.status) : null,
+          customer_id:
+            record.customer_id != null ? String(record.customer_id) : null,
+          category_name: categoryName,
+        })
+      }
+    }
+  }
+
+  const enrichedRows = rows.map((row) => {
+    const taskId = row.task_id ?? row.taskId
+    if (taskId == null || row.tasks != null || row.task != null) {
+      return row
+    }
+
+    const task = taskById.get(String(taskId))
+    if (!task) return row
+
+    return {
+      ...row,
+      tasks: {
+        title: task.title,
+        city: task.city,
+        status: task.status,
+        customer_id: task.customer_id,
+        categories: task.category_name ? { name: task.category_name } : null,
+      },
+    }
+  })
+
+  const customerIds = [
+    ...new Set(
+      enrichedRows
+        .map((row) => readOfferEmbeddedCustomerId(row))
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ]
+
+  const customerNames =
+    customerIds.length > 0
+      ? await fetchProfileNamesByIds(customerIds)
+      : new Map<string, string>()
+
+  return enrichedRows
+    .map((row) => normalizeAcceptedWorkRow(row, customerNames))
+    .filter((item): item is AcceptedWorkItem => item !== null)
+}
+
+/** Hizmet verenin kabul edilmiş teklifleri ve bağlı görev özeti. */
+export async function fetchAcceptedWorkByProvider(): Promise<FetchAcceptedWorkResult> {
+  const auth = await getAuthSessionContext()
+  if (!auth.session) {
+    return { items: [], error: auth.error ?? 'Oturum bulunamadı.' }
+  }
+
+  const { userId } = auth.session
+  const modes: AcceptedWorkQueryMode[] = ['with_task', 'plain']
+  let lastError: PostgrestError | null = null
+
+  for (const mode of modes) {
+    const { rows, error } = await queryAcceptedWorkOffers(userId, mode)
+
+    if (!error) {
+      const items = await enrichAcceptedWorkOffers(rows)
+
+      if (import.meta.env.DEV) {
+        console.info('[offers] accepted work', { count: items.length, mode })
+      }
+
+      return { items, error: null }
+    }
+
+    lastError = error
+    logSupabaseError('fetchAcceptedWorkByProvider', error, { mode, userId })
+
+    if (!isPostgrestSchemaError(error)) {
+      break
+    }
+  }
+
+  if (lastError) {
+    return { items: [], error: formatOfferFetchError(lastError) }
+  }
+
+  return { items: [], error: null }
 }
 
 type OfferWithTaskRow = {

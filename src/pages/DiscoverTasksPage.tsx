@@ -1,30 +1,31 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { AuthAlert } from '@/components/auth/AuthAlert'
-import { MarketplaceEmpty } from '@/components/marketplace/MarketplaceEmpty'
-import { MarketplaceFilters } from '@/components/marketplace/MarketplaceFilters'
-import { MarketplaceTaskGrid } from '@/components/marketplace/MarketplaceTaskGrid'
-import { TaskListLoading } from '@/components/tasks/TaskListLoading'
+import { MarketplaceOpenTasksPanel } from '@/components/marketplace/MarketplaceOpenTasksPanel'
+import { MarketplaceServicesPanel } from '@/components/marketplace/MarketplaceServicesPanel'
+import {
+  MarketplaceTabs,
+  type MarketplaceTabId,
+} from '@/components/marketplace/MarketplaceTabs'
 import { Container } from '@/components/ui/Container'
 import { useAuth } from '@/hooks/useAuth'
 import { useMarketplace } from '@/hooks/useMarketplace'
+import { useMarketplaceServices } from '@/hooks/useMarketplaceServices'
 import { composeButtonClassName } from '@/lib/button-styles'
+
+const tabDescriptions: Record<MarketplaceTabId, string> = {
+  tasks:
+    'Yayında olan açık görevlere göz atın; yeteneklerinize uygun ilanlara teklif verin.',
+  services:
+    'Aktif hizmet ilanlarını keşfedin; hizmet verenleri kategori ve şehre göre bulun.',
+}
 
 export function DiscoverTasksPage() {
   const { isAuthenticated } = useAuth()
-  const {
-    tasks,
-    totalCount,
-    visibleCount,
-    categories,
-    filters,
-    setFilter,
-    clearFilters,
-    hasActiveFilters,
-    isLoading,
-    error,
-    reload,
-  } = useMarketplace()
+  const [activeTab, setActiveTab] = useState<MarketplaceTabId>('tasks')
+
+  const tasksMarketplace = useMarketplace()
+  const servicesMarketplace = useMarketplaceServices(true)
 
   return (
     <div className="border-b border-gorev-navy-800/80 bg-gradient-to-b from-gorev-navy-900/50 to-gorev-navy-950 pb-16 pt-8 sm:pt-12">
@@ -48,8 +49,7 @@ export function DiscoverTasksPage() {
                   Görev Keşfet
                 </h1>
                 <p className="mt-3 text-sm leading-relaxed text-gorev-muted sm:text-base">
-                  Yayında olan açık görevlere göz atın; yeteneklerinize uygun
-                  ilanlara teklif verin.
+                  {tabDescriptions[activeTab]}
                 </p>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:shrink-0">
@@ -87,54 +87,50 @@ export function DiscoverTasksPage() {
             </div>
           </header>
 
-          <MarketplaceFilters
-            filters={filters}
-            categories={categories}
-            onFilterChange={setFilter}
-            onClear={clearFilters}
-            hasActiveFilters={hasActiveFilters}
-            disabled={isLoading}
+          <MarketplaceTabs
+            activeTab={activeTab}
+            onChange={setActiveTab}
+            taskCount={
+              tasksMarketplace.isLoading
+                ? undefined
+                : tasksMarketplace.totalCount
+            }
+            serviceCount={
+              servicesMarketplace.isLoading
+                ? undefined
+                : servicesMarketplace.totalCount
+            }
           />
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-gorev-muted">
-              {isLoading
-                ? 'Açık görevler yükleniyor…'
-                : hasActiveFilters
-                  ? `${visibleCount} sonuç · toplam ${totalCount} açık görev`
-                  : `${totalCount} açık görev · en yeniler önce`}
-            </p>
-          </div>
-
-          {error ? (
-            <div className="space-y-3">
-              <AuthAlert message={error} variant="error" />
-              <button
-                type="button"
-                onClick={() => void reload()}
-                className="text-sm font-medium text-gorev-yellow-400 underline-offset-4 hover:underline"
-              >
-                Tekrar dene
-              </button>
-            </div>
-          ) : null}
-
-          {isLoading ? (
-            <TaskListLoading className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" />
-          ) : null}
-
-          {!isLoading && !error && tasks.length === 0 ? (
-            <MarketplaceEmpty
-              hasFilters={hasActiveFilters}
-              onClearFilters={
-                hasActiveFilters ? clearFilters : undefined
-              }
+          {activeTab === 'tasks' ? (
+            <MarketplaceOpenTasksPanel
+              tasks={tasksMarketplace.tasks}
+              totalCount={tasksMarketplace.totalCount}
+              visibleCount={tasksMarketplace.visibleCount}
+              categories={tasksMarketplace.categories}
+              filters={tasksMarketplace.filters}
+              setFilter={tasksMarketplace.setFilter}
+              clearFilters={tasksMarketplace.clearFilters}
+              hasActiveFilters={tasksMarketplace.hasActiveFilters}
+              isLoading={tasksMarketplace.isLoading}
+              error={tasksMarketplace.error}
+              reload={tasksMarketplace.reload}
             />
-          ) : null}
-
-          {!isLoading && tasks.length > 0 ? (
-            <MarketplaceTaskGrid tasks={tasks} />
-          ) : null}
+          ) : (
+            <MarketplaceServicesPanel
+              services={servicesMarketplace.services}
+              totalCount={servicesMarketplace.totalCount}
+              visibleCount={servicesMarketplace.visibleCount}
+              categories={servicesMarketplace.categories}
+              filters={servicesMarketplace.filters}
+              setFilter={servicesMarketplace.setFilter}
+              clearFilters={servicesMarketplace.clearFilters}
+              hasActiveFilters={servicesMarketplace.hasActiveFilters}
+              isLoading={servicesMarketplace.isLoading}
+              error={servicesMarketplace.error}
+              reload={servicesMarketplace.reload}
+            />
+          )}
         </div>
       </Container>
     </div>

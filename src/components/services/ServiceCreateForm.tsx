@@ -8,9 +8,10 @@ import { TextareaField } from '@/components/ui/TextareaField'
 import { CitySelectField } from '@/components/ui/CitySelectField'
 import { TextField } from '@/components/ui/TextField'
 import { useCategories } from '@/hooks/useCategories'
-import { useCreateTask } from '@/hooks/useCreateTask'
+import { useCreateService } from '@/hooks/useCreateService'
+import { cn } from '@/lib/utils'
 
-export function TaskCreateForm() {
+export function ServiceCreateForm() {
   const {
     categories,
     isLoading: categoriesLoading,
@@ -26,7 +27,7 @@ export function TaskCreateForm() {
     successMessage,
     setField,
     submit,
-  } = useCreateTask()
+  } = useCreateService()
 
   const categoryOptions = useMemo(
     () =>
@@ -80,9 +81,9 @@ export function TaskCreateForm() {
       {submitError ? <AuthAlert message={submitError} variant="error" /> : null}
 
       <TextField
-        label="Görev başlığı"
+        label="Hizmet başlığı"
         name="title"
-        placeholder="Örn. Haftalık ofis temizliği (90 m²)"
+        placeholder="Örn. Profesyonel ofis temizliği"
         value={form.title}
         onChange={(e) => setField('title', e.target.value)}
         error={fieldErrors.title}
@@ -94,11 +95,11 @@ export function TaskCreateForm() {
       <TextareaField
         label="Açıklama"
         name="description"
-        placeholder="İşin kapsamını, süreyi, konumu ve beklentilerinizi net yazın…"
+        placeholder="Sunduğunuz hizmetin kapsamını, süresini ve dahil olanları yazın…"
         value={form.description}
         onChange={(e) => setField('description', e.target.value)}
         error={fieldErrors.description}
-        hint="Ne kadar detaylı olursa, o kadar isabetli teklif alırsınız."
+        hint="Ne kadar net olursa, müşteriler sizi o kadar kolay bulur."
         required
         disabled={formDisabled}
         rows={5}
@@ -118,7 +119,7 @@ export function TaskCreateForm() {
         }
         required
         disabled={formDisabled || categoryOptions.length === 0}
-        hint="Görev kategorisini seçin; ilanınız doğru uzmanlara ulaşır."
+        hint="Hizmetinizin ait olduğu kategoriyi seçin."
         searchable
         searchPlaceholder="Kategori ara…"
         emptyMessage="Bu aramayla eşleşen kategori yok."
@@ -135,42 +136,51 @@ export function TaskCreateForm() {
         placeholder="İl seçin…"
       />
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <TextField
-          label="Minimum bütçe (₺)"
-          name="budget_min"
-          type="number"
-          inputMode="decimal"
-          min={0}
-          step={50}
-          placeholder="1500"
-          value={form.budget_min}
-          onChange={(e) => setField('budget_min', e.target.value)}
-          error={fieldErrors.budget_min}
-          required
-          disabled={formDisabled}
-        />
-        <TextField
-          label="Maksimum bütçe (₺)"
-          name="budget_max"
-          type="number"
-          inputMode="decimal"
-          min={0}
-          step={50}
-          placeholder="2400"
-          value={form.budget_max}
-          onChange={(e) => setField('budget_max', e.target.value)}
-          error={fieldErrors.budget_max}
-          hint="Teklifler bu aralıkta toplanır."
-          required
-          disabled={formDisabled}
-        />
+      <TextField
+        label="Başlangıç fiyatı (₺)"
+        name="base_price"
+        type="number"
+        inputMode="decimal"
+        min={0}
+        step={50}
+        placeholder="1500"
+        value={form.base_price}
+        onChange={(e) => setField('base_price', e.target.value)}
+        error={fieldErrors.base_price}
+        hint="Hizmetiniz için başlangıç fiyatınızı belirtin."
+        required
+        disabled={formDisabled}
+      />
+
+      <div className="rounded-xl border border-gorev-navy-800 bg-gorev-navy-900/40 p-4">
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            name="is_active"
+            checked={form.is_active}
+            onChange={(e) => setField('is_active', e.target.checked)}
+            disabled={formDisabled}
+            className={cn(
+              'mt-0.5 h-4 w-4 shrink-0 rounded border-gorev-navy-600 bg-gorev-navy-950',
+              'text-gorev-yellow-400 focus:ring-2 focus:ring-gorev-yellow-400/40 focus:ring-offset-0',
+            )}
+          />
+          <span>
+            <span className="block text-sm font-medium text-gorev-snow">
+              Hizmeti yayında tut
+            </span>
+            <span className="mt-1 block text-xs leading-relaxed text-gorev-muted">
+              İşaretliyken hizmetiniz aktif olarak listelenir. Kaldırırsanız
+              pasif duruma geçer.
+            </span>
+          </span>
+        </label>
       </div>
 
       <div className="flex flex-col gap-3 border-t border-gorev-navy-800 pt-6 sm:flex-row sm:justify-between">
         <p className="text-xs leading-relaxed text-gorev-muted sm:max-w-xs sm:self-center">
-          Gönderdiğinizde ilanınız yayına alınır ve uygun hizmet verenlerden
-          teklif almaya başlarsınız.
+          Sunduğunuz hizmet paketi, görev ilanlarından ayrı olarak
+          listelenir.
         </p>
         <Button
           type="submit"
@@ -178,7 +188,7 @@ export function TaskCreateForm() {
           loading={isSubmitting}
           disabled={formDisabled || categoryOptions.length === 0}
         >
-          Görevi yayınla
+          Hizmeti yayınla
         </Button>
       </div>
     </form>

@@ -1,37 +1,37 @@
 import { Link } from 'react-router-dom'
 
 import { DashboardCard } from '@/components/dashboard/DashboardCard'
-import { TaskCreateForm } from '@/components/tasks/TaskCreateForm'
+import { ServiceCreateForm } from '@/components/services/ServiceCreateForm'
 import { composeButtonClassName } from '@/lib/button-styles'
 
-export function CreateTaskPage() {
+export function CreateServicePage() {
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gorev-green-400">
-            Yeni ilan
+            Yeni hizmet
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-gorev-snow">
-            Görev Oluştur
+            Hizmet Oluştur
           </h1>
           <p className="mt-2 text-sm text-gorev-muted">
-            İhtiyacınızı tanımlayın; doğru uzmanlardan teklif alın.
+            Sunduğunuz hizmeti tanıtın; müşteriler sizi keşfetsin.
           </p>
         </div>
         <Link
-          to="/dashboard"
+          to="/dashboard/hizmetler"
           className={composeButtonClassName(
             'outline',
             'inline-flex min-h-10 items-center justify-center px-4 text-sm',
           )}
         >
-          Panele dön
+          Hizmetlerime dön
         </Link>
       </div>
 
-      <DashboardCard title="Görev bilgileri">
-        <TaskCreateForm />
+      <DashboardCard title="Hizmet bilgileri">
+        <ServiceCreateForm />
       </DashboardCard>
     </div>
   )

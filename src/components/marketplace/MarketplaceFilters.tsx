@@ -14,6 +14,7 @@ type MarketplaceFiltersProps = {
   onClear: () => void
   hasActiveFilters: boolean
   disabled?: boolean
+  searchPlaceholder?: string
 }
 
 export function MarketplaceFilters({
@@ -23,6 +24,7 @@ export function MarketplaceFilters({
   onClear,
   hasActiveFilters,
   disabled = false,
+  searchPlaceholder = 'Başlık, kategori veya şehir…',
 }: MarketplaceFiltersProps) {
   const categoryOptions = categories.map((category) => ({
     value: category.id,
@@ -54,7 +56,7 @@ export function MarketplaceFilters({
         <TextField
           label="Ara"
           name="marketplace_search"
-          placeholder="Başlık, kategori, şehir veya görev sahibi…"
+          placeholder={searchPlaceholder}
           value={filters.search}
           onChange={(e) => onFilterChange('search', e.target.value)}
           disabled={disabled}

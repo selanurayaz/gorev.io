@@ -37,6 +37,15 @@ export type SubmittedOfferItem = Offer & {
   provider_name?: string | null
 }
 
+/** Kabul edilmiş teklif — hizmet verenin üzerinde çalıştığı görev. */
+export type AcceptedWorkItem = Offer & {
+  task_title: string
+  task_city: string | null
+  task_status: string | null
+  task_category_name: string | null
+  customer_name: string | null
+}
+
 export type OfferActionResult = {
   success: boolean
   error: string | null

@@ -4,26 +4,24 @@ import { useNavigate } from 'react-router-dom'
 import { useProfile } from '@/hooks/useProfile'
 import { resolveTurkishCityName } from '@/lib/cities'
 import {
-  emptyTaskForm,
-  validateTaskForm,
-  type TaskFormErrors,
-} from '@/lib/task-form'
-import { createTask } from '@/services/tasks'
-import type { TaskFormValues } from '@/types/task'
+  emptyServiceForm,
+  validateServiceForm,
+  type ServiceFormErrors,
+} from '@/lib/service-form'
+import { createService } from '@/services/services'
+import type { ServiceFormValues } from '@/types/service'
 
-export function useCreateTask() {
+export function useCreateService() {
   const navigate = useNavigate()
   const { profile, isLoading: profileLoading } = useProfile()
 
-  const [form, setForm] = useState<TaskFormValues>(emptyTaskForm)
-  const [fieldErrors, setFieldErrors] = useState<TaskFormErrors>({})
+  const [form, setForm] = useState<ServiceFormValues>(emptyServiceForm)
+  const [fieldErrors, setFieldErrors] = useState<ServiceFormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [cityPrefilled, setCityPrefilled] = useState(false)
-  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  )
+  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     return () => {
@@ -57,7 +55,7 @@ export function useCreateTask() {
   }, [profile?.city, profileLoading, cityPrefilled])
 
   const setField = useCallback(
-    <K extends keyof TaskFormValues>(key: K, value: TaskFormValues[K]) => {
+    <K extends keyof ServiceFormValues>(key: K, value: ServiceFormValues[K]) => {
       setForm((prev) => ({ ...prev, [key]: value }))
       setFieldErrors((prev) => {
         if (!prev[key]) return prev
@@ -75,22 +73,21 @@ export function useCreateTask() {
     setSubmitError(null)
     setSuccessMessage(null)
 
-    const errors = validateTaskForm(form)
+    const errors = validateServiceForm(form)
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
 
-    const budgetMin = Number(form.budget_min.trim().replace(',', '.'))
-    const budgetMax = Number(form.budget_max.trim().replace(',', '.'))
+    const basePrice = Number(form.base_price.trim().replace(',', '.'))
 
     setIsSubmitting(true)
 
-    const { task, error } = await createTask({
+    const { service, error } = await createService({
       title: form.title.trim(),
       description: form.description.trim(),
       category_id: form.category_id,
       city: form.city.trim(),
-      budget_min: budgetMin,
-      budget_max: budgetMax,
+      base_price: basePrice,
+      is_active: form.is_active,
     })
 
     setIsSubmitting(false)
@@ -100,19 +97,21 @@ export function useCreateTask() {
       return
     }
 
-    setSuccessMessage('Göreviniz oluşturuldu. Panele yönlendiriliyorsunuz…')
+    setSuccessMessage(
+      'Hizmetiniz oluşturuldu. Hizmetlerinize yönlendiriliyorsunuz…',
+    )
 
     if (redirectTimeoutRef.current) {
       clearTimeout(redirectTimeoutRef.current)
     }
 
     redirectTimeoutRef.current = window.setTimeout(() => {
-      navigate('/dashboard', {
+      navigate('/dashboard/hizmetler', {
         replace: true,
         state: {
-          taskCreated: true,
-          taskId: task?.id,
-          taskTitle: task?.title ?? form.title.trim(),
+          serviceCreated: true,
+          serviceId: service?.id,
+          serviceTitle: service?.title ?? form.title.trim(),
         },
       })
     }, 900)

@@ -122,6 +122,20 @@ export function formatNotificationUpdateError(error: PostgrestError): string {
   return 'Bildirim güncellenemedi. Lütfen tekrar deneyin.'
 }
 
+export function formatServiceCreateError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Hizmet oluşturulamadı (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Hizmet kaydedilemedi. Lütfen bilgileri kontrol edip tekrar deneyin.'
+}
+
+export function formatServiceFetchError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Hizmetler yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Hizmetleriniz yüklenemedi. Lütfen sayfayı yenileyin.'
+}
+
 export function formatDashboardFetchError(error: PostgrestError): string {
   if (import.meta.env.DEV) {
     return `Panel verileri yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
