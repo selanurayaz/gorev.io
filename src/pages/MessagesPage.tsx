@@ -58,7 +58,7 @@ export function MessagesPage() {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100dvh-8.5rem)] max-w-5xl flex-col gap-4 sm:h-[calc(100dvh-9rem)]">
+    <div className="mx-auto flex min-h-[calc(100dvh-8.5rem)] max-w-5xl flex-col gap-4 sm:min-h-[calc(100dvh-9rem)]">
       <header className="shrink-0">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gorev-green-400">
           İletişim

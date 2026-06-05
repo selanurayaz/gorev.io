@@ -75,13 +75,13 @@ export function DiscoverTasksPage() {
                   </Link>
                 )}
                 <Link
-                  to="/dashboard"
+                  to={isAuthenticated ? '/dashboard' : '/giris'}
                   className={composeButtonClassName(
                     'outline',
                     'min-h-11 justify-center px-6',
                   )}
                 >
-                  Panele git
+                  {isAuthenticated ? 'Panele git' : 'Giriş yap'}
                 </Link>
               </div>
             </div>

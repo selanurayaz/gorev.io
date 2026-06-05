@@ -13,12 +13,14 @@ import type { AppNotification } from '@/types/notification'
 type NotificationItemProps = {
   notification: AppNotification
   onRead: (id: string) => void
+  onNavigate?: () => void
   compact?: boolean
 }
 
 export function NotificationItem({
   notification,
   onRead,
+  onNavigate,
   compact = false,
 }: NotificationItemProps) {
   const tone = getNotificationTypeTone(notification.type)
@@ -28,6 +30,7 @@ export function NotificationItem({
     if (!notification.is_read) {
       void onRead(notification.id)
     }
+    onNavigate?.()
   }
 
   return (

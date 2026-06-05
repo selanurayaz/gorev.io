@@ -45,7 +45,9 @@ export function NotificationsPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gorev-navy-800 px-4 py-3 sm:px-5">
           <p className="text-sm text-gorev-muted">
             {unreadCount > 0
-              ? `${unreadCount} okunmamış bildirim`
+              ? unreadCount === 1
+                ? '1 okunmamış bildirim'
+                : `${unreadCount} okunmamış bildirim`
               : 'Tüm bildirimler okundu'}
           </p>
           {unreadCount > 0 ? (

@@ -47,7 +47,7 @@ export function NotificationBell() {
 
     void refresh({ silent: true })
 
-    function handlePointerDown(event: MouseEvent) {
+    function handlePointerDown(event: MouseEvent | TouchEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
         setOpen(false)
       }
@@ -58,9 +58,11 @@ export function NotificationBell() {
     }
 
     document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('touchstart', handlePointerDown)
     window.addEventListener('keydown', handleEscape)
     return () => {
       document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('touchstart', handlePointerDown)
       window.removeEventListener('keydown', handleEscape)
     }
   }, [open, refresh])
@@ -133,6 +135,7 @@ export function NotificationBell() {
                   key={notification.id}
                   notification={notification}
                   onRead={markAsRead}
+                  onNavigate={() => setOpen(false)}
                   compact
                 />
               ))}
