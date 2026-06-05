@@ -121,3 +121,10 @@ export function formatNotificationUpdateError(error: PostgrestError): string {
   }
   return 'Bildirim güncellenemedi. Lütfen tekrar deneyin.'
 }
+
+export function formatDashboardFetchError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Panel verileri yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Panel verileri yüklenemedi. Lütfen sayfayı yenileyin.'
+}

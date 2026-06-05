@@ -3,13 +3,31 @@ import { Link } from 'react-router-dom'
 import { ProfileLoadState } from '@/components/dashboard/ProfileLoadState'
 import { useProfile } from '@/hooks/useProfile'
 import { composeButtonClassName } from '@/lib/button-styles'
+import type { DashboardStats } from '@/types/dashboard'
 
-export function DashboardWelcome() {
-  const { displayName, isLoading, error, refetch } = useProfile()
+type DashboardWelcomeProps = {
+  stats: DashboardStats | null
+  isLoading: boolean
+}
+
+export function DashboardWelcome({ stats, isLoading }: DashboardWelcomeProps) {
+  const { displayName, isLoading: profileLoading, error, refetch } = useProfile()
 
   const hour = new Date().getHours()
   const greeting =
     hour < 12 ? 'Günaydın' : hour < 18 ? 'İyi günler' : 'İyi akşamlar'
+
+  let summary = 'Görevlerin ve güncellemelerin için özet aşağıda.'
+
+  if (!isLoading && stats) {
+    if (stats.activeTasks > 0 && stats.unreadMessages > 0) {
+      summary = `${stats.activeTasks} aktif görevin ve ${stats.unreadMessages} okunmamış mesajın var. Özet aşağıda.`
+    } else if (stats.activeTasks > 0) {
+      summary = `${stats.activeTasks} aktif görevin var. Özet aşağıda.`
+    } else if (stats.unreadMessages > 0) {
+      summary = `${stats.unreadMessages} okunmamış mesajın var. Özet aşağıda.`
+    }
+  }
 
   return (
     <section className="relative overflow-hidden rounded-2xl border border-gorev-navy-800 bg-gradient-to-br from-gorev-navy-900 via-gorev-navy-950 to-gorev-navy-900 p-6 sm:p-8">
@@ -27,7 +45,7 @@ export function DashboardWelcome() {
             Kontrol paneli
           </p>
 
-          {isLoading ? (
+          {profileLoading ? (
             <div
               className="mt-2 h-9 w-56 max-w-full animate-pulse rounded-lg bg-gorev-navy-800"
               aria-hidden
@@ -41,10 +59,9 @@ export function DashboardWelcome() {
 
           <ProfileLoadState error={error} onRetry={refetch} />
 
-          {!isLoading ? (
+          {!profileLoading && !isLoading ? (
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-gorev-muted sm:text-base">
-              Bugün 3 aktif görevin var. Yeni teklifler ve mesajlar için özet
-              aşağıda — hızlıca aksiyon alabilirsin.
+              {summary}
             </p>
           ) : null}
         </div>
@@ -59,15 +76,15 @@ export function DashboardWelcome() {
           >
             Yeni görev oluştur
           </Link>
-          <button
-            type="button"
+          <Link
+            to="/dashboard/teklifler"
             className={composeButtonClassName(
               'outline',
               'min-h-11 justify-center px-6',
             )}
           >
             Teklifleri gör
-          </button>
+          </Link>
         </div>
       </div>
     </section>

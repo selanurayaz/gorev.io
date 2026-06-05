@@ -33,3 +33,10 @@ export type {
   NotificationMetadata,
   NotificationType,
 } from '@/types/notification'
+
+export type {
+  DashboardActivityItem,
+  DashboardData,
+  DashboardStatDisplay,
+  DashboardStats,
+} from '@/types/dashboard'
