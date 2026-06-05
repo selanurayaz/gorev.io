@@ -120,6 +120,7 @@ export function enrichMarketplaceService(
   service: ServiceListItem,
   providerNames: Map<string, string>,
   embeddedProviderName?: string | null,
+  providerRating: MarketplaceService['provider_rating'] = null,
 ): MarketplaceService {
   const provider_name =
     embeddedProviderName ??
@@ -127,7 +128,7 @@ export function enrichMarketplaceService(
       ? providerNames.get(service.provider_id) ?? null
       : null)
 
-  return { ...service, provider_name }
+  return { ...service, provider_name, provider_rating: providerRating }
 }
 
 export function normalizeMarketplaceServiceRow(

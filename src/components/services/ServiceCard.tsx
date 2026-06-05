@@ -1,7 +1,9 @@
+import { UserRatingBadge } from '@/components/reviews/UserRatingBadge'
 import { formatCityLabel } from '@/lib/cities'
 import { formatServiceBasePrice } from '@/lib/service-display'
 import { formatTaskCreatedAt } from '@/lib/task-display'
 import { cn } from '@/lib/utils'
+import type { UserRatingSummary } from '@/types/review'
 import type { ServiceListItem } from '@/types/service'
 
 import { ServiceStatusBadge } from '@/components/services/ServiceStatusBadge'
@@ -9,12 +11,14 @@ import { ServiceStatusBadge } from '@/components/services/ServiceStatusBadge'
 type ServiceCardProps = {
   service: ServiceListItem
   providerName?: string | null
+  providerRating?: UserRatingSummary | null
   className?: string
 }
 
 export function ServiceCard({
   service,
   providerName,
+  providerRating = null,
   className,
 }: ServiceCardProps) {
   const categoryLabel = service.category_name ?? 'Kategori belirtilmedi'
@@ -64,6 +68,14 @@ export function ServiceCard({
             <dt className="shrink-0 text-gorev-muted">Hizmet veren</dt>
             <dd className="text-right font-medium text-gorev-green-400">
               {providerName.trim()}
+            </dd>
+          </div>
+        ) : null}
+        {providerRating ? (
+          <div className="flex items-start justify-between gap-3">
+            <dt className="shrink-0 text-gorev-muted">Puan</dt>
+            <dd className="text-right">
+              <UserRatingBadge summary={providerRating} compact />
             </dd>
           </div>
         ) : null}

@@ -1,4 +1,5 @@
 import type { ServiceId } from '@/types/index'
+import type { UserRatingSummary } from '@/types/review'
 
 /** `services` tablosu — hizmet veren ilanları. */
 export type Service = {
@@ -18,9 +19,10 @@ export type ServiceListItem = Service & {
   category_name: string | null
 }
 
-/** Keşfet / marketplace — hizmet veren adı dahil. */
+/** Keşfet / marketplace — hizmet veren adı ve puanı dahil. */
 export type MarketplaceService = ServiceListItem & {
   provider_name: string | null
+  provider_rating: UserRatingSummary | null
 }
 
 export type ServiceFormValues = {

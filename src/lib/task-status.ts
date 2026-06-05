@@ -41,3 +41,15 @@ export function isDashboardCompletedTaskStatus(
 ): boolean {
   return COMPLETED_STATUSES.has(normalizeStatus(status))
 }
+
+export function isTaskInProgressStatus(
+  status: string | null | undefined,
+): boolean {
+  return IN_PROGRESS_STATUSES.has(normalizeStatus(status))
+}
+
+export function isTaskCompletedStatus(
+  status: string | null | undefined,
+): boolean {
+  return COMPLETED_STATUSES.has(normalizeStatus(status))
+}

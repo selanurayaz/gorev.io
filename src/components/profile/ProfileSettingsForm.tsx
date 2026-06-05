@@ -6,9 +6,20 @@ import { Spinner } from '@/components/ui/Spinner'
 import { TextareaField } from '@/components/ui/TextareaField'
 import { CitySelectField } from '@/components/ui/CitySelectField'
 import { TextField } from '@/components/ui/TextField'
+import { UserRatingBadge } from '@/components/reviews/UserRatingBadge'
+import { useAuth } from '@/hooks/useAuth'
 import { useProfileSettings } from '@/hooks/useProfileSettings'
+import { useUserRatingSummary } from '@/hooks/useUserRatingSummary'
 
 export function ProfileSettingsForm() {
+  const { user } = useAuth()
+  const {
+    summary: ratingSummary,
+    isLoading: ratingLoading,
+    error: ratingError,
+    reload: reloadRating,
+  } = useUserRatingSummary(user?.id)
+
   const {
     email,
     form,
@@ -58,6 +69,27 @@ export function ProfileSettingsForm() {
 
   return (
     <form className="space-y-5 p-5 sm:p-6" onSubmit={handleSubmit} noValidate>
+      <div className="rounded-xl border border-gorev-navy-800 bg-gorev-navy-900/40 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-gorev-muted">
+          Ortalama puanınız
+        </p>
+        <div className="mt-2">
+          <UserRatingBadge
+            summary={ratingSummary}
+            isLoading={ratingLoading}
+          />
+        </div>
+        {ratingError ? (
+          <button
+            type="button"
+            onClick={() => void reloadRating()}
+            className="mt-2 text-sm font-medium text-gorev-yellow-400 underline-offset-4 hover:underline"
+          >
+            Puan bilgisini yenile
+          </button>
+        ) : null}
+      </div>
+
       {successMessage ? (
         <AuthAlert message={successMessage} variant="success" />
       ) : null}

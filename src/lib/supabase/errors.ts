@@ -136,6 +136,27 @@ export function formatServiceFetchError(error: PostgrestError): string {
   return 'Hizmetleriniz yüklenemedi. Lütfen sayfayı yenileyin.'
 }
 
+export function formatTaskCompleteError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Görev tamamlanamadı (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Görev tamamlanamadı. Lütfen tekrar deneyin.'
+}
+
+export function formatReviewCreateError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Değerlendirme kaydedilemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Değerlendirme kaydedilemedi. Lütfen tekrar deneyin.'
+}
+
+export function formatReviewFetchError(error: PostgrestError): string {
+  if (import.meta.env.DEV) {
+    return `Değerlendirme yüklenemedi (${error.code ?? 'hata'}): ${error.message}`
+  }
+  return 'Değerlendirme bilgisi yüklenemedi. Lütfen tekrar deneyin.'
+}
+
 export function formatDashboardFetchError(error: PostgrestError): string {
   if (import.meta.env.DEV) {
     return `Panel verileri yüklenemedi (${error.code ?? 'hata'}): ${error.message}`

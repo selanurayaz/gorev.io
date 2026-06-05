@@ -11,6 +11,7 @@ import {
 } from '@/lib/supabase/errors'
 import { supabase } from '@/lib/supabase/client'
 import { fetchProfileNamesByIds } from '@/services/profiles'
+import { fetchUserRatingSummariesByIds } from '@/services/reviews'
 import type { MarketplaceService } from '@/types/service'
 import type { MarketplaceTask } from '@/types/task'
 
@@ -251,6 +252,17 @@ export async function fetchActiveMarketplaceServices(
               },
         )
       }
+
+      const providerIds = [
+        ...new Set(services.map((service) => service.provider_id).filter(Boolean)),
+      ]
+      const ratingSummaries =
+        await fetchUserRatingSummariesByIds(providerIds)
+
+      services = services.map((service) => ({
+        ...service,
+        provider_rating: ratingSummaries.get(service.provider_id) ?? null,
+      }))
 
       const sorted = sortTasksNewestFirst(services)
 

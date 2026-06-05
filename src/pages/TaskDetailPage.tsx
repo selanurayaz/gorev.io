@@ -3,12 +3,16 @@ import { Link, useParams } from 'react-router-dom'
 import { AuthAlert } from '@/components/auth/AuthAlert'
 import { OfferForm } from '@/components/offers/OfferForm'
 import { TaskOffersList } from '@/components/offers/TaskOffersList'
+import { TaskReviewSection } from '@/components/reviews/TaskReviewSection'
+import { TaskCompleteSection } from '@/components/tasks/TaskCompleteSection'
 import { TaskDetailPanel } from '@/components/tasks/TaskDetailPanel'
 import { Container } from '@/components/ui/Container'
 import { Spinner } from '@/components/ui/Spinner'
 import { useAuth } from '@/hooks/useAuth'
+import { useCompleteTask } from '@/hooks/useCompleteTask'
 import { useTaskDetail } from '@/hooks/useTaskDetail'
 import { useTaskOffers } from '@/hooks/useTaskOffers'
+import { isTaskCompletedStatus, isTaskInProgressStatus } from '@/lib/task-status'
 import { composeButtonClassName } from '@/lib/button-styles'
 import type { TaskId } from '@/types/index'
 
@@ -30,10 +34,25 @@ export function TaskDetailPage() {
     reload: reloadOffers,
   } = useTaskOffers(id, isOwner)
 
+  const {
+    isCompleting,
+    error: completeError,
+    successMessage: completeSuccess,
+    complete,
+  } = useCompleteTask(() => {
+    void reload()
+  })
+
   const canSubmitOffer =
     isAuthenticated &&
     !isOwner &&
     task?.status?.toLowerCase() === 'open'
+
+  const showCompleteSection =
+    isAuthenticated && isOwner && task && isTaskInProgressStatus(task.status)
+
+  const showReviewSection =
+    isAuthenticated && isOwner && task && isTaskCompletedStatus(task.status)
 
   return (
     <div className="border-b border-gorev-navy-800/80 bg-gorev-navy-950 pb-16 pt-6 sm:pt-10">
@@ -71,6 +90,20 @@ export function TaskDetailPage() {
         {task && !isLoading ? (
           <>
             <TaskDetailPanel task={task} />
+
+            {showCompleteSection && id ? (
+              <TaskCompleteSection
+                taskId={id}
+                isCompleting={isCompleting}
+                error={completeError}
+                successMessage={completeSuccess}
+                onComplete={() => void complete(id)}
+              />
+            ) : null}
+
+            {showReviewSection && id ? (
+              <TaskReviewSection taskId={id} enabled />
+            ) : null}
 
             {isOwner ? (
               <section className="rounded-2xl border border-gorev-navy-800 bg-gorev-navy-900/40 p-5 sm:p-6">

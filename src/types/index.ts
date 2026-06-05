@@ -44,6 +44,13 @@ export type {
 } from '@/types/dashboard'
 
 export type {
+  Review,
+  ReviewCreateInput,
+  ReviewFormValues,
+  UserRatingSummary,
+} from '@/types/review'
+
+export type {
   MarketplaceService,
   Service,
   ServiceCreateInput,

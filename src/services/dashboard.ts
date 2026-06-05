@@ -9,6 +9,7 @@ import { getAuthSessionContext } from '@/lib/supabase/session'
 import { supabase } from '@/lib/supabase/client'
 import { normalizeNotificationRow } from '@/lib/notification-mapper'
 import { fetchCategories } from '@/services/categories'
+import { fetchUserRatingSummary } from '@/services/reviews'
 import { fetchMyTasks } from '@/services/tasks'
 import type {
   DashboardActivityItem,
@@ -68,87 +69,6 @@ async function fetchUnreadMessagesCount(
 
   const count = toRows(data).filter((row) => !readMessageIsRead(row)).length
   return { count, error: null }
-}
-
-function readReviewRating(row: Record<string, unknown>): number | null {
-  const raw = row.rating ?? row.score ?? row.stars ?? row.value
-  if (raw == null) return null
-  const value = Number(raw)
-  return Number.isFinite(value) ? value : null
-}
-
-function readReviewedUserId(row: Record<string, unknown>): string | null {
-  const id =
-    row.reviewed_user_id ??
-    row.reviewedUserId ??
-    row.reviewee_id ??
-    row.revieweeId ??
-    row.user_id
-  return id != null ? String(id) : null
-}
-
-async function fetchAverageRating(
-  userId: string,
-): Promise<{
-  average: number | null
-  count: number
-  error: PostgrestError | null
-}> {
-  for (const reviewedColumn of [
-    'reviewed_user_id',
-    'reviewee_id',
-    'user_id',
-  ] as const) {
-    const response = await supabase
-      .from('reviews')
-      .select(`rating, ${reviewedColumn}`)
-      .eq(reviewedColumn, userId)
-
-    if (response.error) {
-      if (isPostgrestSchemaError(response.error)) continue
-      return { average: null, count: 0, error: response.error }
-    }
-
-    const ratings = toRows(response.data)
-      .map((row) => readReviewRating(row))
-      .filter((value): value is number => value !== null)
-
-    if (ratings.length === 0) {
-      return { average: null, count: 0, error: null }
-    }
-
-    const sum = ratings.reduce((total, value) => total + value, 0)
-    return {
-      average: sum / ratings.length,
-      count: ratings.length,
-      error: null,
-    }
-  }
-
-  const fallback = await supabase.from('reviews').select('rating, reviewed_user_id')
-
-  if (fallback.error) {
-    if (isPostgrestSchemaError(fallback.error)) {
-      return { average: null, count: 0, error: null }
-    }
-    return { average: null, count: 0, error: fallback.error }
-  }
-
-  const ratings = toRows(fallback.data)
-    .filter((row) => readReviewedUserId(row) === userId)
-    .map((row) => readReviewRating(row))
-    .filter((value): value is number => value !== null)
-
-  if (ratings.length === 0) {
-    return { average: null, count: 0, error: null }
-  }
-
-  const sum = ratings.reduce((total, value) => total + value, 0)
-  return {
-    average: sum / ratings.length,
-    count: ratings.length,
-    error: null,
-  }
 }
 
 async function fetchRecentNotifications(
@@ -239,15 +159,15 @@ export async function fetchDashboardData(): Promise<FetchDashboardResult> {
   ] = await Promise.all([
     fetchMyTasks(categoryNames),
     fetchUnreadMessagesCount(userId),
-    fetchAverageRating(userId),
+    fetchUserRatingSummary(userId),
     fetchRecentNotifications(userId, ACTIVITY_LIMIT),
   ])
 
   if (unreadResult.error) {
     logSupabaseError('fetchDashboard.unreadMessages', unreadResult.error)
   }
-  if (ratingResult.error) {
-    logSupabaseError('fetchDashboard.rating', ratingResult.error)
+  if (ratingResult.error && import.meta.env.DEV) {
+    console.warn('[dashboard] rating', ratingResult.error)
   }
   if (notificationsResult.error) {
     logSupabaseError('fetchDashboard.notifications', notificationsResult.error)
@@ -263,8 +183,8 @@ export async function fetchDashboardData(): Promise<FetchDashboardResult> {
   const stats = buildStatsFromTasks(
     tasksResult.tasks,
     unreadResult.count,
-    ratingResult.average,
-    ratingResult.count,
+    ratingResult.summary.averageRating,
+    ratingResult.summary.reviewCount,
   )
 
   const recentTasks = tasksResult.tasks.slice(0, RECENT_TASK_LIMIT)

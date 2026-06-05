@@ -15,6 +15,7 @@ export function MarketplaceServiceGrid({
           <ServiceCard
             service={service}
             providerName={service.provider_name}
+            providerRating={service.provider_rating}
           />
         </li>
       ))}

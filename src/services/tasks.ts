@@ -8,7 +8,9 @@ import {
   normalizeTaskRow,
 } from '@/lib/task-mapper'
 import { sortTasksNewestFirst } from '@/lib/task-list-utils'
+import { isTaskCompletedStatus, isTaskInProgressStatus } from '@/lib/task-status'
 import {
+  formatTaskCompleteError,
   formatTaskCreateError,
   formatTaskFetchError,
   isPostgrestSchemaError,
@@ -272,4 +274,97 @@ export async function fetchTaskDetailById(
   }
 
   return { task: null, error: null }
+}
+
+export type CompleteTaskResult = {
+  success: boolean
+  error: string | null
+  message: string | null
+}
+
+/** Görev sahibi devam eden görevi tamamlandı olarak işaretler. */
+export async function completeTask(taskId: TaskId): Promise<CompleteTaskResult> {
+  const auth = await getAuthSessionContext()
+  if (!auth.session) {
+    return {
+      success: false,
+      error: auth.error ?? 'Oturum bulunamadı.',
+      message: null,
+    }
+  }
+
+  const { userId } = auth.session
+
+  const { data, error: fetchError } = await supabase
+    .from('tasks')
+    .select('id, customer_id, status')
+    .eq('id', taskId)
+    .maybeSingle()
+
+  if (fetchError) {
+    logSupabaseError('completeTask.fetch', fetchError, { taskId, userId })
+    return {
+      success: false,
+      error: formatTaskFetchError(fetchError),
+      message: null,
+    }
+  }
+
+  if (!data || typeof data !== 'object') {
+    return { success: false, error: 'Görev bulunamadı.', message: null }
+  }
+
+  const row = data as Record<string, unknown>
+  const customerId = row.customer_id ?? row.user_id ?? row.owner_id
+
+  if (customerId == null || String(customerId) !== userId) {
+    return {
+      success: false,
+      error: 'Yalnızca görev sahibi bu işlemi yapabilir.',
+      message: null,
+    }
+  }
+
+  const status = row.status != null ? String(row.status) : null
+
+  if (isTaskCompletedStatus(status)) {
+    return {
+      success: true,
+      error: null,
+      message: 'Görev zaten tamamlanmış.',
+    }
+  }
+
+  if (!isTaskInProgressStatus(status)) {
+    return {
+      success: false,
+      error: 'Yalnızca devam eden görevler tamamlanabilir.',
+      message: null,
+    }
+  }
+
+  const { error: updateError } = await supabase
+    .from('tasks')
+    .update({ status: 'completed' })
+    .eq('id', taskId)
+    .eq('customer_id', userId)
+
+  if (updateError) {
+    logSupabaseError('completeTask.update', updateError, { taskId, userId })
+    return {
+      success: false,
+      error: formatTaskCompleteError(updateError),
+      message: null,
+    }
+  }
+
+  if (import.meta.env.DEV) {
+    console.info('[tasks] completed', { taskId, userId })
+  }
+
+  return {
+    success: true,
+    error: null,
+    message: 'Görev tamamlandı olarak işaretlendi.',
+  }
 }

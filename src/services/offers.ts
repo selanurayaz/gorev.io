@@ -1,5 +1,6 @@
 import type { PostgrestError } from '@supabase/supabase-js'
 
+import { isOfferAccepted } from '@/lib/messaging-eligibility'
 import { canRespondToOffer } from '@/lib/offer-display'
 import {
   normalizeAcceptedWorkRow,
@@ -793,6 +794,27 @@ async function rejectOtherPendingOffers(
   }
 
   return error
+}
+
+/** Görev için kabul edilmiş teklifin hizmet verenini döner. */
+export async function fetchAcceptedProviderIdForTask(
+  taskId: TaskId,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('offers')
+    .select('provider_id, status')
+    .eq('task_id', taskId)
+
+  if (error) {
+    logSupabaseError('fetchAcceptedProviderIdForTask', error, { taskId })
+    return null
+  }
+
+  const acceptedRow = toRows(data).find((row) =>
+    isOfferAccepted(String(row.status ?? '')),
+  )
+  const providerId = acceptedRow?.provider_id ?? acceptedRow?.providerId
+  return providerId != null ? String(providerId) : null
 }
 
 /** Görev sahibi teklifi kabul eder; görev `in_progress`, diğer bekleyen teklifler reddedilir. */
