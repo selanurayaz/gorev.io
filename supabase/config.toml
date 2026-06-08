@@ -1,0 +1,2 @@
+[functions.suggest-price]
+verify_jwt = true

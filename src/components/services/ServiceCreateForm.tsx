@@ -7,6 +7,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { TextareaField } from '@/components/ui/TextareaField'
 import { CitySelectField } from '@/components/ui/CitySelectField'
 import { TextField } from '@/components/ui/TextField'
+import { AiPriceSuggestionPanel } from '@/components/pricing/AiPriceSuggestionPanel'
 import { useCategories } from '@/hooks/useCategories'
 import { useCreateService } from '@/hooks/useCreateService'
 import { cn } from '@/lib/utils'
@@ -36,6 +37,13 @@ export function ServiceCreateForm() {
         label: category.name,
       })),
     [categories],
+  )
+
+  const categoryName = useMemo(
+    () =>
+      categoryOptions.find((option) => option.value === form.category_id)
+        ?.label ?? '',
+    [categoryOptions, form.category_id],
   )
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -134,6 +142,16 @@ export function ServiceCreateForm() {
         required
         disabled={formDisabled}
         placeholder="İl seçin…"
+      />
+
+      <AiPriceSuggestionPanel
+        listingType="service"
+        title={form.title}
+        description={form.description}
+        category={categoryName}
+        city={form.city}
+        disabled={formDisabled}
+        onApplyService={(basePrice) => setField('base_price', basePrice)}
       />
 
       <TextField

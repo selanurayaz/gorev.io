@@ -7,6 +7,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { TextareaField } from '@/components/ui/TextareaField'
 import { CitySelectField } from '@/components/ui/CitySelectField'
 import { TextField } from '@/components/ui/TextField'
+import { AiPriceSuggestionPanel } from '@/components/pricing/AiPriceSuggestionPanel'
 import { useCategories } from '@/hooks/useCategories'
 import { useCreateTask } from '@/hooks/useCreateTask'
 
@@ -35,6 +36,13 @@ export function TaskCreateForm() {
         label: category.name,
       })),
     [categories],
+  )
+
+  const categoryName = useMemo(
+    () =>
+      categoryOptions.find((option) => option.value === form.category_id)
+        ?.label ?? '',
+    [categoryOptions, form.category_id],
   )
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -133,6 +141,19 @@ export function TaskCreateForm() {
         required
         disabled={formDisabled}
         placeholder="İl seçin…"
+      />
+
+      <AiPriceSuggestionPanel
+        listingType="task"
+        title={form.title}
+        description={form.description}
+        category={categoryName}
+        city={form.city}
+        disabled={formDisabled}
+        onApplyTask={(budgetMin, budgetMax) => {
+          setField('budget_min', budgetMin)
+          setField('budget_max', budgetMax)
+        }}
       />
 
       <div className="grid gap-5 sm:grid-cols-2">

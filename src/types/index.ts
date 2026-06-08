@@ -51,6 +51,12 @@ export type {
 } from '@/types/review'
 
 export type {
+  ListingType,
+  PriceSuggestion,
+  PriceSuggestionRequest,
+} from '@/types/price-suggestion'
+
+export type {
   MarketplaceService,
   Service,
   ServiceCreateInput,
