@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/Button'
 import { Container } from '@/components/ui/Container'
 
 const trustItems = [
-  { label: 'Ortalama puan', value: '4,9 / 5' },
   { label: 'Tamamlanan görev', value: '38K+' },
   { label: 'Doğrulanmış uzman', value: '12K+' },
+  { label: 'Hizmet kategorisi', value: '6+' },
 ] as const
 
 export function HeroSection() {

@@ -5,6 +5,7 @@ import {
   filterMarketplaceServices,
   type MarketplaceFilters,
 } from '@/lib/marketplace-filters'
+import { subscribeReviewSubmitted } from '@/lib/review-events'
 import { fetchCategories } from '@/services/categories'
 import { fetchActiveMarketplaceServices } from '@/services/marketplace'
 import type { ServiceCategory } from '@/types/category'
@@ -70,6 +71,8 @@ export function useMarketplaceServices(enabled = true) {
       cancelled = true
     }
   }, [enabled, hasLoaded])
+
+  useEffect(() => subscribeReviewSubmitted(() => void load()), [load])
 
   const filteredServices = useMemo(
     () => filterMarketplaceServices(services, filters),

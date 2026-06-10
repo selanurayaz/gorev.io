@@ -1,4 +1,7 @@
+import { Link } from 'react-router-dom'
+
 import { UserRatingBadge } from '@/components/reviews/UserRatingBadge'
+import { hasRealReviews } from '@/lib/review-display'
 import { formatCityLabel } from '@/lib/cities'
 import { formatServiceBasePrice } from '@/lib/service-display'
 import { formatTaskCreatedAt } from '@/lib/task-display'
@@ -13,6 +16,8 @@ type ServiceCardProps = {
   providerName?: string | null
   providerRating?: UserRatingSummary | null
   className?: string
+  /** Verilirse kart tıklanabilir hizmet detayına gider. */
+  detailHref?: string
 }
 
 export function ServiceCard({
@@ -20,14 +25,17 @@ export function ServiceCard({
   providerName,
   providerRating = null,
   className,
+  detailHref,
 }: ServiceCardProps) {
   const categoryLabel = service.category_name ?? 'Kategori belirtilmedi'
   const cityLabel = formatCityLabel(service.city)
 
-  return (
+  const article = (
     <article
       className={cn(
         'flex h-full flex-col rounded-2xl border border-gorev-navy-800 bg-gradient-to-b from-gorev-navy-900/80 to-gorev-navy-950/90 p-5 shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset] transition duration-200',
+        detailHref &&
+          'hover:-translate-y-0.5 hover:border-gorev-navy-700 hover:shadow-lg hover:shadow-black/25',
         className,
       )}
     >
@@ -71,11 +79,17 @@ export function ServiceCard({
             </dd>
           </div>
         ) : null}
-        {providerRating ? (
+        {providerRating !== null ? (
           <div className="flex items-start justify-between gap-3">
             <dt className="shrink-0 text-gorev-muted">Puan</dt>
             <dd className="text-right">
-              <UserRatingBadge summary={providerRating} compact />
+              {hasRealReviews(providerRating) ? (
+                <UserRatingBadge summary={providerRating} compact />
+              ) : (
+                <span className="text-sm text-gorev-muted">
+                  Henüz değerlendirme yok
+                </span>
+              )}
             </dd>
           </div>
         ) : null}
@@ -92,4 +106,17 @@ export function ServiceCard({
       </footer>
     </article>
   )
+
+  if (detailHref) {
+    return (
+      <Link
+        to={detailHref}
+        className="block h-full rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gorev-yellow-400"
+      >
+        {article}
+      </Link>
+    )
+  }
+
+  return article
 }

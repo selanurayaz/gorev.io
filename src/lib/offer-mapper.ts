@@ -1,8 +1,10 @@
+import { readSourceServiceId } from '@/lib/task-source'
 import type {
   AcceptedWorkItem,
   IncomingOfferItem,
   Offer,
   OfferListItem,
+  ServiceRequestItem,
   SubmittedOfferItem,
 } from '@/types/offer'
 
@@ -197,6 +199,65 @@ export function readOfferEmbeddedCustomerId(
   row: Record<string, unknown>,
 ): string | null {
   return readEmbeddedTask(row).customer_id
+}
+
+function readEmbeddedServiceTitle(row: Record<string, unknown>): string | null {
+  const embedded = row.services ?? row.service
+  if (!embedded) return null
+
+  const readTitle = (obj: Record<string, unknown>) =>
+    obj.title != null ? String(obj.title).trim() || null : null
+
+  if (Array.isArray(embedded)) {
+    const first = embedded[0]
+    if (first && typeof first === 'object') {
+      return readTitle(first as Record<string, unknown>)
+    }
+    return null
+  }
+
+  if (typeof embedded === 'object' && embedded !== null) {
+    return readTitle(embedded as Record<string, unknown>)
+  }
+
+  return null
+}
+
+export function normalizeServiceRequestRow(
+  row: Record<string, unknown>,
+  customerNames: Map<string, string> = new Map(),
+): ServiceRequestItem | null {
+  const offer = normalizeOfferRow(row)
+  if (!offer) return null
+
+  const task = readEmbeddedTask(row)
+  const taskRow =
+    row.tasks && typeof row.tasks === 'object' && !Array.isArray(row.tasks)
+      ? (row.tasks as Record<string, unknown>)
+      : row.task && typeof row.task === 'object' && !Array.isArray(row.task)
+        ? (row.task as Record<string, unknown>)
+        : null
+
+  const resolvedServiceId =
+    row.service_id != null
+      ? String(row.service_id)
+      : taskRow
+        ? readSourceServiceId(taskRow)
+        : null
+
+  const customerId = task.customer_id
+  const customer_name =
+    customerId != null ? (customerNames.get(customerId) ?? null) : null
+
+  return {
+    ...offer,
+    task_title: task.title?.trim() || 'Hizmet talebi',
+    task_city: task.city?.trim() || null,
+    customer_id: customerId,
+    customer_name,
+    service_id: resolvedServiceId,
+    service_title: readEmbeddedServiceTitle(row),
+  }
 }
 
 export function normalizeAcceptedWorkRow(

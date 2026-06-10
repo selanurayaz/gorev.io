@@ -1,3 +1,5 @@
+import { serviceDetailPath } from '@/lib/paths'
+
 import { ServiceCard } from '@/components/services/ServiceCard'
 import type { MarketplaceService } from '@/types/service'
 
@@ -16,6 +18,7 @@ export function MarketplaceServiceGrid({
             service={service}
             providerName={service.provider_name}
             providerRating={service.provider_rating}
+            detailHref={serviceDetailPath(service.id)}
           />
         </li>
       ))}

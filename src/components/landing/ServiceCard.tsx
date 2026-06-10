@@ -1,4 +1,6 @@
+import { hasRealReviews, formatAverageRating, formatReviewCount } from '@/lib/review-display'
 import { cn } from '@/lib/utils'
+import type { UserRatingSummary } from '@/types/review'
 
 export type ServiceCardProps = {
   title: string
@@ -6,8 +8,7 @@ export type ServiceCardProps = {
   location: string
   priceLabel: string
   category: string
-  rating: number
-  reviews: number
+  ratingSummary?: UserRatingSummary | null
   badge?: string
   className?: string
 }
@@ -18,12 +19,11 @@ export function ServiceCard({
   location,
   priceLabel,
   category,
-  rating,
-  reviews,
+  ratingSummary = null,
   badge,
   className,
 }: ServiceCardProps) {
-  const ratingLabel = `${rating.toFixed(2).replace('.', ',')} / 5`
+  const hasReviews = hasRealReviews(ratingSummary)
 
   return (
     <article
@@ -62,18 +62,25 @@ export function ServiceCard({
           <p className="text-xs text-gorev-muted">Başlangıç</p>
           <p className="text-base font-semibold text-gorev-snow">{priceLabel}</p>
         </div>
-        <div
-          className="text-right text-sm text-gorev-muted"
-          role="img"
-          aria-label={`${rating.toFixed(1)} üzerinden 5 yıldız. ${reviews} değerlendirme.`}
-        >
-          <span className="font-medium text-gorev-yellow-400" aria-hidden>
-            ★
-          </span>{' '}
-          <span className="text-gorev-snow">{ratingLabel}</span>
-          <span className="block text-xs text-gorev-muted" aria-hidden>
-            ({reviews} yorum)
-          </span>
+        <div className="text-right text-sm text-gorev-muted">
+          {hasReviews ? (
+            <p
+              role="img"
+              aria-label={`${formatAverageRating(ratingSummary.averageRating)} üzerinden 5 yıldız. ${ratingSummary.reviewCount} değerlendirme.`}
+            >
+              <span className="font-medium text-gorev-yellow-400" aria-hidden>
+                ★
+              </span>{' '}
+              <span className="text-gorev-snow">
+                {formatAverageRating(ratingSummary.averageRating)} / 5
+              </span>
+              <span className="mt-0.5 block text-xs" aria-hidden>
+                {formatReviewCount(ratingSummary.reviewCount)}
+              </span>
+            </p>
+          ) : (
+            <p className="text-xs">Henüz değerlendirme yok</p>
+          )}
         </div>
       </div>
 

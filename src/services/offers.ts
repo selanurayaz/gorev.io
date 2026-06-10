@@ -25,6 +25,7 @@ import {
   notifyOfferRejected,
 } from '@/services/notification-triggers'
 import { fetchProfileNamesByIds } from '@/services/profiles'
+import { fetchServiceRequestTaskIdSet } from '@/services/service-requests'
 import type {
   AcceptedWorkItem,
   IncomingOfferItem,
@@ -335,10 +336,16 @@ async function enrichIncomingOffers(
   const taskIdSet = new Set(taskIds)
   let providerNames = new Map<string, string>()
 
+  const serviceRequestTaskIds = await fetchServiceRequestTaskIdSet()
+
   let offers = rows
     .filter((row) => {
       const taskId = row.task_id ?? row.taskId
-      return taskId != null && taskIdSet.has(String(taskId))
+      return (
+        taskId != null &&
+        taskIdSet.has(String(taskId)) &&
+        !serviceRequestTaskIds.has(String(taskId))
+      )
     })
     .map((row) => {
       const embedded = row.tasks ?? row.task
@@ -386,11 +393,17 @@ export async function fetchIncomingOffersForOwner(): Promise<FetchIncomingOffers
     const { rows, error } = await queryIncomingOffers(userId, mode)
 
     if (!error) {
+      const serviceRequestTaskIds = await fetchServiceRequestTaskIdSet()
+      const filteredRows = rows.filter((row) => {
+        const taskId = row.task_id ?? row.taskId
+        return taskId == null || !serviceRequestTaskIds.has(String(taskId))
+      })
+
       const offers =
         mode === 'with_joins'
           ? await (async () => {
               let providerNames = new Map<string, string>()
-              let list = rows
+              let list = filteredRows
                 .map((row) => normalizeIncomingOfferRow(row, providerNames))
                 .filter((o): o is IncomingOfferItem => o !== null)
 
@@ -411,7 +424,7 @@ export async function fetchIncomingOffersForOwner(): Promise<FetchIncomingOffers
               }
               return list
             })()
-          : await enrichIncomingOffers(rows, userId)
+          : await enrichIncomingOffers(filteredRows, userId)
 
       if (import.meta.env.DEV) {
         console.info('[offers] incoming', { count: offers.length, mode })
@@ -476,7 +489,12 @@ export async function fetchSubmittedOffersByProvider(): Promise<FetchSubmittedOf
     const { rows, error } = await querySubmittedOffers(userId, mode)
 
     if (!error) {
+      const serviceRequestTaskIds = await fetchServiceRequestTaskIdSet()
       const offers = rows
+        .filter((row) => {
+          const taskId = row.task_id ?? row.taskId
+          return taskId == null || !serviceRequestTaskIds.has(String(taskId))
+        })
         .map((row) => normalizeSubmittedOfferRow(row))
         .filter((offer): offer is SubmittedOfferItem => offer !== null)
 

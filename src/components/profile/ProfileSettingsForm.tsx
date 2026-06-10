@@ -6,10 +6,12 @@ import { Spinner } from '@/components/ui/Spinner'
 import { TextareaField } from '@/components/ui/TextareaField'
 import { CitySelectField } from '@/components/ui/CitySelectField'
 import { TextField } from '@/components/ui/TextField'
+import { ReviewList } from '@/components/reviews/ReviewList'
 import { UserRatingBadge } from '@/components/reviews/UserRatingBadge'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfileSettings } from '@/hooks/useProfileSettings'
 import { useUserRatingSummary } from '@/hooks/useUserRatingSummary'
+import { useUserReviews } from '@/hooks/useUserReviews'
 
 export function ProfileSettingsForm() {
   const { user } = useAuth()
@@ -19,6 +21,13 @@ export function ProfileSettingsForm() {
     error: ratingError,
     reload: reloadRating,
   } = useUserRatingSummary(user?.id)
+
+  const {
+    reviews,
+    isLoading: reviewsLoading,
+    error: reviewsError,
+    reload: reloadReviews,
+  } = useUserReviews(user?.id)
 
   const {
     email,
@@ -88,6 +97,20 @@ export function ProfileSettingsForm() {
             Puan bilgisini yenile
           </button>
         ) : null}
+      </div>
+
+      <div className="rounded-xl border border-gorev-navy-800 bg-gorev-navy-900/40 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-gorev-muted">
+          Son değerlendirmeler
+        </p>
+        <div className="mt-3">
+          <ReviewList
+            reviews={reviews}
+            isLoading={reviewsLoading}
+            error={reviewsError}
+            onRetry={reloadReviews}
+          />
+        </div>
       </div>
 
       {successMessage ? (

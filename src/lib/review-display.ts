@@ -1,5 +1,19 @@
 import type { UserRatingSummary } from '@/types/review'
 
+export function hasRealReviews(
+  summary: UserRatingSummary | null | undefined,
+): summary is UserRatingSummary & {
+  averageRating: number
+  reviewCount: number
+} {
+  return Boolean(
+    summary &&
+      summary.reviewCount > 0 &&
+      summary.averageRating != null &&
+      Number.isFinite(summary.averageRating),
+  )
+}
+
 export function formatAverageRating(
   value: number | null | undefined,
 ): string {

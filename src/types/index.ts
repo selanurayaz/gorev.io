@@ -21,6 +21,8 @@ export type {
   AcceptedWorkItem,
   IncomingOfferItem,
   SubmittedOfferItem,
+  ServiceRequestItem,
+  RequestServiceResult,
 } from '@/types/offer'
 
 export type {
@@ -47,6 +49,7 @@ export type {
   Review,
   ReviewCreateInput,
   ReviewFormValues,
+  ReviewListItem,
   UserRatingSummary,
 } from '@/types/review'
 

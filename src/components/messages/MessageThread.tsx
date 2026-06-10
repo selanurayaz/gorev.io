@@ -3,11 +3,13 @@ import { useEffect, useRef } from 'react'
 import { AuthAlert } from '@/components/auth/AuthAlert'
 import { MessageBubble } from '@/components/messages/MessageBubble'
 import { MessageComposer } from '@/components/messages/MessageComposer'
+import { TaskOwnerWorkPanel } from '@/components/tasks/TaskOwnerWorkPanel'
 import { Spinner } from '@/components/ui/Spinner'
 import { useAuth } from '@/hooks/useAuth'
 import { useMessageThread } from '@/hooks/useMessageThread'
 import { sameUserId } from '@/lib/messaging-utils'
 import type { Conversation } from '@/types/message'
+import type { TaskId } from '@/types/index'
 
 type MessageThreadProps = {
   conversation: Conversation | null
@@ -96,6 +98,12 @@ export function MessageThread({ conversation, onMessageSent }: MessageThreadProp
         {sendError ? (
           <div className="px-4 pb-2">
             <AuthAlert message={sendError} variant="error" />
+          </div>
+        ) : null}
+
+        {taskId ? (
+          <div className="border-t border-gorev-navy-800 px-4 py-4 sm:px-5">
+            <TaskOwnerWorkPanel taskId={taskId as TaskId} />
           </div>
         ) : null}
 

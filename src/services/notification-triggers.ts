@@ -92,6 +92,81 @@ export async function notifyOfferRejected(input: {
   })
 }
 
+/** Hizmet verene yeni hizmet talebi bildirimi. */
+export async function notifyServiceRequestReceived(input: {
+  providerId: string
+  customerId: string
+  offerId: string
+  taskId: TaskId
+  serviceId: string
+  serviceTitle: string
+}): Promise<void> {
+  const customerName = await getDisplayName(input.customerId)
+
+  await createNotification({
+    user_id: input.providerId,
+    type: 'service_request_received',
+    title: 'Yeni hizmet talebi',
+    message: `${customerName}, “${input.serviceTitle}” hizmetiniz için talep gönderdi.`,
+    metadata: {
+      task_id: input.taskId,
+      offer_id: input.offerId,
+      service_id: input.serviceId,
+      other_user_id: input.customerId,
+    },
+  })
+}
+
+/** Müşteriye hizmet talebi kabul bildirimi. */
+export async function notifyServiceRequestAccepted(input: {
+  customerId: string
+  providerId: string
+  offerId: string
+  taskId: TaskId
+}): Promise<void> {
+  const [taskTitle, providerName] = await Promise.all([
+    getTaskTitle(input.taskId),
+    getDisplayName(input.providerId),
+  ])
+
+  await createNotification({
+    user_id: input.customerId,
+    type: 'service_request_accepted',
+    title: 'Hizmet talebiniz kabul edildi',
+    message: `${providerName}, “${taskTitle}” talebinizi kabul etti. Mesajlaşmaya başlayabilirsiniz.`,
+    metadata: {
+      task_id: input.taskId,
+      offer_id: input.offerId,
+      other_user_id: input.providerId,
+    },
+  })
+}
+
+/** Müşteriye hizmet talebi red bildirimi. */
+export async function notifyServiceRequestRejected(input: {
+  customerId: string
+  providerId: string
+  offerId: string
+  taskId: TaskId
+}): Promise<void> {
+  const [taskTitle, providerName] = await Promise.all([
+    getTaskTitle(input.taskId),
+    getDisplayName(input.providerId),
+  ])
+
+  await createNotification({
+    user_id: input.customerId,
+    type: 'service_request_rejected',
+    title: 'Hizmet talebiniz reddedildi',
+    message: `${providerName}, “${taskTitle}” talebinizi reddetti.`,
+    metadata: {
+      task_id: input.taskId,
+      offer_id: input.offerId,
+      other_user_id: input.providerId,
+    },
+  })
+}
+
 /** Alıcıya yeni mesaj bildirimi. */
 export async function notifyMessageReceived(input: {
   receiverId: string

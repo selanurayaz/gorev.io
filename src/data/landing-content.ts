@@ -76,8 +76,6 @@ export const featuredServices = [
     location: 'Eskişehir · Yerinde',
     priceLabel: "₺900 / seans",
     category: 'Özel Ders',
-    rating: 4.9,
-    reviews: 214,
     badge: 'Yüksek eşleşme',
   },
   {
@@ -87,8 +85,6 @@ export const featuredServices = [
     location: 'Çankaya · Yerinde',
     priceLabel: "₺2.100'den başlayan",
     category: 'Temizlik',
-    rating: 4.85,
-    reviews: 96,
     badge: 'Aynı hafta',
   },
   {
@@ -98,8 +94,6 @@ export const featuredServices = [
     location: 'Uzaktan · Türkiye',
     priceLabel: 'Sabit ₺3.200',
     category: 'Grafik Tasarım',
-    rating: 5.0,
-    reviews: 44,
     badge: 'Portföy öne çıkan',
   },
   {
@@ -109,8 +103,6 @@ export const featuredServices = [
     location: 'Uzaktan · Avrupa saati uyumlu',
     priceLabel: "₺4.500'ye kadar",
     category: 'Yazılım',
-    rating: 4.95,
-    reviews: 67,
     badge: 'Kısa sürede',
   },
 ] as const
@@ -118,6 +110,6 @@ export const featuredServices = [
 export const stats = [
   { label: 'Tamamlanan görev', value: '38K+' },
   { label: 'Aktif hizmet veren', value: '12K+' },
-  { label: 'Ortalama puan', value: '4,9' },
+  { label: 'Hizmet kategorisi', value: '6+' },
   { label: 'Şehir', value: '42' },
 ] as const

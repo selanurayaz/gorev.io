@@ -19,12 +19,10 @@ export function TaskCompleteSection({
 }: TaskCompleteSectionProps) {
   return (
     <section className="rounded-2xl border border-gorev-navy-800 bg-gorev-navy-900/40 p-5 sm:p-6">
-      <h2 className="text-lg font-semibold text-gorev-snow">
-        Görevi tamamla
-      </h2>
+      <h2 className="text-lg font-semibold text-gorev-snow">İşi tamamla</h2>
       <p className="mt-1 text-sm text-gorev-muted">
-        İş tamamlandığında görevi kapatın; ardından hizmet verene
-        değerlendirme bırakabilirsiniz.
+        Hizmet tamamlandığında aşağıdaki düğmeye basın; ardından hizmet
+        verene değerlendirme bırakabilirsiniz.
       </p>
 
       {successMessage ? (
@@ -46,7 +44,7 @@ export function TaskCompleteSection({
         onClick={onComplete}
         data-task-id={taskId}
       >
-        Görevi tamamlandı olarak işaretle
+        Tamamlandı
       </Button>
     </section>
   )

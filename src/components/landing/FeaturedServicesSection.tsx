@@ -24,8 +24,6 @@ export function FeaturedServicesSection() {
               location={job.location}
               priceLabel={job.priceLabel}
               category={job.category}
-              rating={job.rating}
-              reviews={job.reviews}
               badge={job.badge}
             />
           ))}

@@ -1,4 +1,8 @@
-import { buildRatingLabel, formatAverageRating } from '@/lib/review-display'
+import {
+  formatAverageRating,
+  formatReviewCount,
+  hasRealReviews,
+} from '@/lib/review-display'
 import { cn } from '@/lib/utils'
 import type { UserRatingSummary } from '@/types/review'
 
@@ -27,7 +31,7 @@ export function UserRatingBadge({
     )
   }
 
-  if (summary.reviewCount <= 0 || summary.averageRating == null) {
+  if (!hasRealReviews(summary)) {
     return (
       <p className={cn('text-sm text-gorev-muted', className)}>
         Henüz değerlendirme yok
@@ -39,8 +43,8 @@ export function UserRatingBadge({
     return (
       <p className={cn('text-sm font-medium text-gorev-yellow-300', className)}>
         ★ {formatAverageRating(summary.averageRating)}
-        <span className="ml-1 font-normal text-gorev-muted">
-          ({summary.reviewCount})
+        <span className="ml-1.5 font-normal text-gorev-muted">
+          {formatReviewCount(summary.reviewCount)}
         </span>
       </p>
     )
@@ -51,7 +55,9 @@ export function UserRatingBadge({
       <span className="font-semibold text-gorev-yellow-300">
         ★ {formatAverageRating(summary.averageRating)}
       </span>
-      <span className="ml-2 text-gorev-muted">{buildRatingLabel(summary)}</span>
+      <span className="ml-2 text-gorev-muted">
+        {formatReviewCount(summary.reviewCount)}
+      </span>
     </p>
   )
 }

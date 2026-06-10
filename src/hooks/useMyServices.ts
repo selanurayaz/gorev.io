@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { subscribeReviewSubmitted } from '@/lib/review-events'
 import { fetchCategories } from '@/services/categories'
+import { fetchServiceRatingSummariesByIds } from '@/services/reviews'
 import { fetchMyServices } from '@/services/services'
+import type { UserRatingSummary } from '@/types/review'
 import type { ServiceListItem } from '@/types/service'
 
 function buildCategoryNameMap(
@@ -12,6 +15,9 @@ function buildCategoryNameMap(
 
 export function useMyServices() {
   const [services, setServices] = useState<ServiceListItem[]>([])
+  const [serviceRatings, setServiceRatings] = useState<
+    Map<string, UserRatingSummary>
+  >(new Map())
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -25,7 +31,12 @@ export function useMyServices() {
     const { services: rows, error: servicesError } =
       await fetchMyServices(categoryNames)
 
+    const ratings = await fetchServiceRatingSummariesByIds(
+      rows.map((service) => service.id),
+    )
+
     setServices(rows)
+    setServiceRatings(ratings)
     setError(servicesError)
     setIsLoading(false)
   }, [])
@@ -45,7 +56,14 @@ export function useMyServices() {
         await fetchMyServices(categoryNames)
 
       if (cancelled) return
+
+      const ratings = await fetchServiceRatingSummariesByIds(
+        rows.map((service) => service.id),
+      )
+
+      if (cancelled) return
       setServices(rows)
+      setServiceRatings(ratings)
       setError(servicesError)
       setIsLoading(false)
     })()
@@ -55,10 +73,13 @@ export function useMyServices() {
     }
   }, [])
 
+  useEffect(() => subscribeReviewSubmitted(() => void load()), [load])
+
   const serviceCount = useMemo(() => services.length, [services])
 
   return {
     services,
+    serviceRatings,
     serviceCount,
     isLoading,
     error,

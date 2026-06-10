@@ -4,11 +4,15 @@ export type NotificationType =
   | 'offer_received'
   | 'offer_accepted'
   | 'offer_rejected'
+  | 'service_request_received'
+  | 'service_request_accepted'
+  | 'service_request_rejected'
   | 'message_received'
 
 export type NotificationMetadata = {
   task_id?: string
   offer_id?: string
+  service_id?: string
   other_user_id?: string
   message_id?: string
 }

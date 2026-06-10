@@ -24,8 +24,11 @@ export function logSupabaseError(
 export function isPostgrestSchemaError(error: PostgrestError): boolean {
   return (
     error.code === 'PGRST204' ||
+    error.code === 'PGRST201' ||
     error.code === '42703' ||
-    /column|schema cache|does not exist/i.test(error.message)
+    /column|schema cache|does not exist|could not embed|more than one relationship/i.test(
+      error.message,
+    )
   )
 }
 
@@ -73,7 +76,24 @@ export function formatTaskFetchError(error: PostgrestError): string {
   return 'Görevleriniz yüklenemedi. Lütfen sayfayı yenileyin.'
 }
 
+export function isPostgrestPermissionError(error: PostgrestError): boolean {
+  return (
+    error.code === '42501' ||
+    error.code === 'PGRST301' ||
+    /row-level security|permission denied|not authorized|violates row-level/i.test(
+      error.message,
+    )
+  )
+}
+
 export function formatOfferCreateError(error: PostgrestError): string {
+  if (isPostgrestPermissionError(error)) {
+    if (import.meta.env.DEV) {
+      return `Teklif kaydedilemedi — yetki/RLS (${error.code ?? 'hata'}): ${error.message}`
+    }
+    return 'Talep kaydı oluşturulamadı. Oturum veya veritabanı izinlerini kontrol edin.'
+  }
+
   if (import.meta.env.DEV) {
     return `Teklif gönderilemedi (${error.code ?? 'hata'}): ${error.message}`
   }
@@ -92,6 +112,30 @@ export function formatOfferUpdateError(error: PostgrestError): string {
     return `Teklif güncellenemedi (${error.code ?? 'hata'}): ${error.message}`
   }
   return 'İşlem tamamlanamadı. Lütfen tekrar deneyin.'
+}
+
+export function formatRpcError(
+  error: PostgrestError,
+  fallback = 'İşlem tamamlanamadı. Lütfen tekrar deneyin.',
+): string {
+  const message = error.message?.trim()
+  if (import.meta.env.DEV) {
+    return message
+      ? `İşlem başarısız (${error.code ?? 'hata'}): ${message}`
+      : `İşlem başarısız (${error.code ?? 'hata'}): ${fallback}`
+  }
+  return message || fallback
+}
+
+export function formatUpdateNoRowError(
+  entity: 'Teklif' | 'Görev',
+  devContext?: string,
+): string {
+  if (import.meta.env.DEV) {
+    const suffix = devContext ? ` (${devContext})` : ''
+    return `${entity} güncellenemedi — hiçbir satır etkilenmedi (RLS veya eşleşmeyen kayıt)${suffix}.`
+  }
+  return 'Kayıt güncellenemedi. Yetkiniz olmayabilir veya kayıt zaten değiştirilmiş.'
 }
 
 export function formatMessageFetchError(error: PostgrestError): string {

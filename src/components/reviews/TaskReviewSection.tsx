@@ -8,9 +8,14 @@ import type { TaskId } from '@/types/index'
 type TaskReviewSectionProps = {
   taskId: TaskId
   enabled: boolean
+  onSubmitted?: () => void
 }
 
-export function TaskReviewSection({ taskId, enabled }: TaskReviewSectionProps) {
+export function TaskReviewSection({
+  taskId,
+  enabled,
+  onSubmitted,
+}: TaskReviewSectionProps) {
   const {
     providerId,
     existingReview,
@@ -24,7 +29,7 @@ export function TaskReviewSection({ taskId, enabled }: TaskReviewSectionProps) {
     setField,
     submit,
     reload,
-  } = useTaskReview(taskId, enabled)
+  } = useTaskReview(taskId, enabled, onSubmitted)
 
   if (!enabled) return null
 

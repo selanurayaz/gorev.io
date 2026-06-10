@@ -1,16 +1,18 @@
 import { cn } from '@/lib/utils'
 
-export type OfferTabId = 'incoming' | 'submitted'
+export type OfferTabId = 'incoming' | 'submitted' | 'requests'
 
 type OfferTabsProps = {
   activeTab: OfferTabId
   onChange: (tab: OfferTabId) => void
   incomingCount?: number
   submittedCount?: number
+  requestsCount?: number
 }
 
 const tabs: { id: OfferTabId; label: string }[] = [
   { id: 'incoming', label: 'Gelen Teklifler' },
+  { id: 'requests', label: 'Hizmet Talepleri' },
   { id: 'submitted', label: 'Verdiğim Teklifler' },
 ]
 
@@ -19,6 +21,7 @@ export function OfferTabs({
   onChange,
   incomingCount,
   submittedCount,
+  requestsCount,
 }: OfferTabsProps) {
   return (
     <div
@@ -29,7 +32,11 @@ export function OfferTabs({
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id
         const count =
-          tab.id === 'incoming' ? incomingCount : submittedCount
+          tab.id === 'incoming'
+            ? incomingCount
+            : tab.id === 'submitted'
+              ? submittedCount
+              : requestsCount
 
         return (
           <button
@@ -39,7 +46,7 @@ export function OfferTabs({
             aria-selected={isActive}
             onClick={() => onChange(tab.id)}
             className={cn(
-              'min-h-10 flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition sm:flex-none sm:px-6',
+              'min-h-10 flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition sm:flex-none sm:px-5',
               isActive
                 ? 'bg-gorev-navy-800 text-gorev-snow shadow-sm ring-1 ring-gorev-yellow-400/25'
                 : 'text-gorev-muted hover:bg-gorev-navy-800/60 hover:text-gorev-snow',

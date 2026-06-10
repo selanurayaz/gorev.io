@@ -51,3 +51,20 @@ export type OfferActionResult = {
   error: string | null
   message: string | null
 }
+
+/** Hizmet verene gelen müşteri talebi — görev ve hizmet özeti dahil. */
+export type ServiceRequestItem = Offer & {
+  task_title: string
+  task_city: string | null
+  customer_id: string | null
+  customer_name: string | null
+  service_id: string | null
+  service_title: string | null
+}
+
+export type RequestServiceResult = {
+  taskId: string | null
+  offerId: string | null
+  providerId: string | null
+  error: string | null
+}

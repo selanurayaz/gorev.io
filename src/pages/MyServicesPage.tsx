@@ -17,7 +17,8 @@ export function MyServicesPage() {
   const state = (location.state ?? {}) as ServiceCreatedState
   const showSuccess = Boolean(state.serviceCreated)
 
-  const { services, serviceCount, isLoading, error, reload } = useMyServices()
+  const { services, serviceRatings, serviceCount, isLoading, error, reload } =
+    useMyServices()
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
@@ -79,7 +80,7 @@ export function MyServicesPage() {
       ) : null}
 
       {!isLoading && services.length > 0 ? (
-        <ServiceList services={services} />
+        <ServiceList services={services} serviceRatings={serviceRatings} />
       ) : null}
     </div>
   )

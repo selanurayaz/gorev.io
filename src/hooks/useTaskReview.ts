@@ -5,16 +5,20 @@ import {
   validateReviewForm,
   type ReviewFormErrors,
 } from '@/lib/review-form'
+import { emitReviewSubmitted } from '@/lib/review-events'
+import { fetchTaskRowForReview, readSourceServiceId } from '@/lib/task-source'
 import { fetchAcceptedProviderIdForTask } from '@/services/offers'
 import { createTaskReview, fetchTaskReviewByReviewer } from '@/services/reviews'
 import type { Review, ReviewFormValues } from '@/types/review'
-import type { TaskId } from '@/types/index'
+import type { ServiceId, TaskId } from '@/types/index'
 
 export function useTaskReview(
   taskId: TaskId | undefined,
   enabled: boolean,
+  onSubmitted?: () => void,
 ) {
   const [providerId, setProviderId] = useState<string | null>(null)
+  const [sourceServiceId, setSourceServiceId] = useState<ServiceId | null>(null)
   const [existingReview, setExistingReview] = useState<Review | null>(null)
   const [form, setForm] = useState<ReviewFormValues>(emptyReviewForm)
   const [fieldErrors, setFieldErrors] = useState<ReviewFormErrors>({})
@@ -27,6 +31,7 @@ export function useTaskReview(
   const load = useCallback(async () => {
     if (!taskId || !enabled) {
       setProviderId(null)
+      setSourceServiceId(null)
       setExistingReview(null)
       setIsLoading(false)
       return
@@ -35,13 +40,17 @@ export function useTaskReview(
     setIsLoading(true)
     setError(null)
 
-    const [provider, reviewResult] = await Promise.all([
+    const [provider, reviewResult, taskResult] = await Promise.all([
       fetchAcceptedProviderIdForTask(taskId),
       fetchTaskReviewByReviewer(taskId),
+      fetchTaskRowForReview(taskId),
     ])
 
     setProviderId(provider)
     setExistingReview(reviewResult.review)
+    setSourceServiceId(
+      taskResult.row ? readSourceServiceId(taskResult.row) : null,
+    )
     setError(reviewResult.error)
     setIsLoading(false)
   }, [taskId, enabled])
@@ -53,6 +62,7 @@ export function useTaskReview(
       if (!taskId || !enabled) {
         if (!cancelled) {
           setProviderId(null)
+          setSourceServiceId(null)
           setExistingReview(null)
           setIsLoading(false)
         }
@@ -62,14 +72,18 @@ export function useTaskReview(
       setIsLoading(true)
       setError(null)
 
-      const [provider, reviewResult] = await Promise.all([
+      const [provider, reviewResult, taskResult] = await Promise.all([
         fetchAcceptedProviderIdForTask(taskId),
         fetchTaskReviewByReviewer(taskId),
+        fetchTaskRowForReview(taskId),
       ])
 
       if (cancelled) return
       setProviderId(provider)
       setExistingReview(reviewResult.review)
+      setSourceServiceId(
+        taskResult.row ? readSourceServiceId(taskResult.row) : null,
+      )
       setError(reviewResult.error)
       setIsLoading(false)
     })()
@@ -111,6 +125,7 @@ export function useTaskReview(
       reviewed_user_id: providerId,
       rating: form.rating,
       comment: form.comment.trim(),
+      service_id: sourceServiceId,
     })
 
     setIsSubmitting(false)
@@ -122,11 +137,20 @@ export function useTaskReview(
 
     setExistingReview(review)
     setSuccessMessage('Değerlendirmeniz kaydedildi. Teşekkür ederiz!')
+
+    const resolvedServiceId = review?.service_id ?? sourceServiceId ?? null
+    emitReviewSubmitted({
+      taskId,
+      serviceId: resolvedServiceId,
+    })
+    onSubmitted?.()
+
     return true
-  }, [form, providerId, taskId])
+  }, [form, onSubmitted, providerId, sourceServiceId, taskId])
 
   return {
     providerId,
+    sourceServiceId,
     existingReview,
     form,
     fieldErrors,

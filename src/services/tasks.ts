@@ -189,6 +189,89 @@ export async function fetchMyTasks(
   return { tasks: [], error: null }
 }
 
+async function fetchAcceptedOfferTaskIdsForCustomer(
+  userId: string,
+  taskIds: string[],
+): Promise<Set<string>> {
+  if (taskIds.length === 0) return new Set()
+
+  const response = await supabase
+    .from('offers')
+    .select('task_id, status')
+    .eq('status', 'accepted')
+    .in('task_id', taskIds)
+
+  if (response.error) {
+    logSupabaseError('fetchAcceptedOfferTaskIdsForCustomer', response.error, {
+      userId,
+      count: taskIds.length,
+    })
+    return new Set()
+  }
+
+  return new Set(
+    toTaskRows(response.data)
+      .map((row) => row.task_id ?? row.taskId)
+      .filter((id): id is string | number => id != null)
+      .map(String),
+  )
+}
+
+function normalizeActiveWorkTaskStatus(
+  task: TaskListItem,
+  acceptedTaskIds: Set<string>,
+): TaskListItem {
+  if (isTaskCompletedStatus(task.status)) return task
+  if (isTaskInProgressStatus(task.status)) return task
+
+  if (acceptedTaskIds.has(task.id)) {
+    return { ...task, status: 'in_progress' }
+  }
+
+  return task
+}
+
+/**
+ * Müşterinin devam eden / tamamlanan işleri (kabul edilmiş teklifler dahil).
+ */
+export async function fetchCustomerActiveWork(
+  categoryNames: Map<string, string> = new Map(),
+): Promise<FetchMyTasksResult> {
+  const { tasks, error } = await fetchMyTasks(categoryNames)
+  if (error) return { tasks: [], error }
+
+  const auth = await getAuthSessionContext()
+  const userId = auth.session?.userId
+  if (!userId) {
+    return { tasks: [], error: auth.error ?? 'Oturum bulunamadı.' }
+  }
+
+  const taskIds = tasks.map((task) => task.id)
+  const acceptedTaskIds = await fetchAcceptedOfferTaskIdsForCustomer(
+    userId,
+    taskIds,
+  )
+
+  const active = tasks
+    .filter(
+      (task) =>
+        isTaskInProgressStatus(task.status) ||
+        isTaskCompletedStatus(task.status) ||
+        acceptedTaskIds.has(task.id),
+    )
+    .map((task) => normalizeActiveWorkTaskStatus(task, acceptedTaskIds))
+
+  if (import.meta.env.DEV) {
+    console.info('[tasks] customer active work', {
+      total: tasks.length,
+      active: active.length,
+      acceptedOfferTasks: acceptedTaskIds.size,
+    })
+  }
+
+  return { tasks: sortTasksNewestFirst(active), error: null }
+}
+
 export type FetchTaskDetailResult = {
   task: MarketplaceTask | null
   error: string | null
@@ -274,6 +357,51 @@ export async function fetchTaskDetailById(
   }
 
   return { task: null, error: null }
+}
+
+export type TaskWorkMeta = {
+  customer_id: string
+  status: string | null
+}
+
+export type FetchTaskWorkMetaResult = {
+  meta: TaskWorkMeta | null
+  error: string | null
+}
+
+/** Tamamlama / değerlendirme UI için görev özeti. */
+export async function fetchTaskWorkMeta(
+  taskId: TaskId,
+): Promise<FetchTaskWorkMetaResult> {
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('customer_id, status')
+    .eq('id', taskId)
+    .maybeSingle()
+
+  if (error) {
+    logSupabaseError('fetchTaskWorkMeta', error, { taskId })
+    return { meta: null, error: formatTaskFetchError(error) }
+  }
+
+  if (!data || typeof data !== 'object') {
+    return { meta: null, error: null }
+  }
+
+  const row = data as Record<string, unknown>
+  const customerId = row.customer_id ?? row.user_id ?? row.owner_id
+
+  if (customerId == null) {
+    return { meta: null, error: null }
+  }
+
+  return {
+    meta: {
+      customer_id: String(customerId),
+      status: row.status != null ? String(row.status) : null,
+    },
+    error: null,
+  }
 }
 
 export type CompleteTaskResult = {

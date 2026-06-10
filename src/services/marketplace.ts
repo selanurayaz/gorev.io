@@ -1,6 +1,7 @@
 import type { PostgrestError } from '@supabase/supabase-js'
 
 import { normalizeMarketplaceServiceRow } from '@/lib/service-mapper'
+import { isServiceRequestTaskRow } from '@/lib/task-source'
 import { normalizeMarketplaceTaskRow } from '@/lib/task-mapper'
 import { sortTasksNewestFirst } from '@/lib/task-list-utils'
 import {
@@ -11,7 +12,7 @@ import {
 } from '@/lib/supabase/errors'
 import { supabase } from '@/lib/supabase/client'
 import { fetchProfileNamesByIds } from '@/services/profiles'
-import { fetchUserRatingSummariesByIds } from '@/services/reviews'
+import { fetchServiceRatingSummariesByIds } from '@/services/reviews'
 import type { MarketplaceService } from '@/types/service'
 import type { MarketplaceTask } from '@/types/task'
 
@@ -65,6 +66,7 @@ function mapMarketplaceRows(
   ownerNames: Map<string, string>,
 ): MarketplaceTask[] {
   return rows
+    .filter((row) => !isServiceRequestTaskRow(row))
     .map((row) =>
       normalizeMarketplaceTaskRow(row, categoryNames, ownerNames),
     )
@@ -253,15 +255,17 @@ export async function fetchActiveMarketplaceServices(
         )
       }
 
-      const providerIds = [
-        ...new Set(services.map((service) => service.provider_id).filter(Boolean)),
-      ]
+      const serviceIds = services.map((service) => service.id)
       const ratingSummaries =
-        await fetchUserRatingSummariesByIds(providerIds)
+        await fetchServiceRatingSummariesByIds(serviceIds)
 
       services = services.map((service) => ({
         ...service,
-        provider_rating: ratingSummaries.get(service.provider_id) ?? null,
+        provider_rating:
+          ratingSummaries.get(service.id) ?? {
+            averageRating: null,
+            reviewCount: 0,
+          },
       }))
 
       const sorted = sortTasksNewestFirst(services)
@@ -289,4 +293,113 @@ export async function fetchActiveMarketplaceServices(
   }
 
   return { services: [], error: null }
+}
+
+export type FetchServiceDetailResult = {
+  service: MarketplaceService | null
+  error: string | null
+}
+
+type ServiceDetailQueryMode = 'full' | 'with_category' | 'plain'
+
+async function queryServiceById(
+  serviceId: string,
+  mode: ServiceDetailQueryMode,
+): Promise<{ row: Record<string, unknown> | null; error: PostgrestError | null }> {
+  const response =
+    mode === 'full'
+      ? await supabase
+          .from('services')
+          .select('*, categories(name), profiles(full_name)')
+          .eq('id', serviceId)
+          .maybeSingle()
+      : mode === 'with_category'
+        ? await supabase
+            .from('services')
+            .select('*, categories(name)')
+            .eq('id', serviceId)
+            .maybeSingle()
+        : await supabase
+            .from('services')
+            .select('*')
+            .eq('id', serviceId)
+            .maybeSingle()
+
+  if (response.error) {
+    return { row: null, error: response.error }
+  }
+
+  if (!response.data || typeof response.data !== 'object') {
+    return { row: null, error: null }
+  }
+
+  return { row: response.data as Record<string, unknown>, error: null }
+}
+
+/** Tekil hizmet detayı (marketplace / talep akışı). */
+export async function fetchServiceDetailById(
+  serviceId: string,
+  categoryNames: Map<string, string> = new Map(),
+): Promise<FetchServiceDetailResult> {
+  const modes: ServiceDetailQueryMode[] = ['full', 'with_category', 'plain']
+  let lastError: PostgrestError | null = null
+
+  for (const mode of modes) {
+    const { row, error } = await queryServiceById(serviceId, mode)
+
+    if (!error) {
+      if (!row) {
+        return { service: null, error: null }
+      }
+
+      let providerNames = new Map<string, string>()
+      let service = normalizeMarketplaceServiceRow(row, categoryNames, providerNames)
+
+      if (!service || !service.is_active) {
+        return { service: null, error: null }
+      }
+
+      if (!service.provider_name && service.provider_id) {
+        providerNames = await fetchProfileNamesByIds([service.provider_id])
+        const name = providerNames.get(service.provider_id) ?? null
+        service = { ...service, provider_name: name }
+      }
+
+      const ratingSummaries = await fetchServiceRatingSummariesByIds([
+        service.id,
+      ])
+
+      service = {
+        ...service,
+        provider_rating:
+          ratingSummaries.get(service.id) ?? {
+            averageRating: null,
+            reviewCount: 0,
+          },
+      }
+
+      if (import.meta.env.DEV) {
+        console.info('[marketplace] service detail loaded', {
+          serviceId,
+          mode,
+          found: true,
+        })
+      }
+
+      return { service, error: null }
+    }
+
+    lastError = error
+    logSupabaseError('fetchServiceDetailById', error, { mode, serviceId })
+
+    if (!isPostgrestSchemaError(error)) {
+      break
+    }
+  }
+
+  if (lastError) {
+    return { service: null, error: formatServiceFetchError(lastError) }
+  }
+
+  return { service: null, error: null }
 }

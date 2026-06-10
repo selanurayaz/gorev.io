@@ -15,6 +15,7 @@ import { DiscoverTasksPage } from '@/pages/DiscoverTasksPage'
 import { MessagesPage } from '@/pages/MessagesPage'
 import { NotificationsPage } from '@/pages/NotificationsPage'
 import { OffersPage } from '@/pages/OffersPage'
+import { ServiceDetailPage } from '@/pages/ServiceDetailPage'
 import { TaskDetailPage } from '@/pages/TaskDetailPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { HomePage } from '@/pages/HomePage'
@@ -28,6 +29,7 @@ export function AppRoutes() {
         <Route index element={<HomePage />} />
         <Route path="kesfet" element={<DiscoverTasksPage />} />
         <Route path="kesfet/gorev/:taskId" element={<TaskDetailPage />} />
+        <Route path="kesfet/hizmet/:serviceId" element={<ServiceDetailPage />} />
       </Route>
 
       <Route path="login" element={<Navigate to="/giris" replace />} />
