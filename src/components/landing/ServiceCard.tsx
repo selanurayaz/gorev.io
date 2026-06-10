@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { hasRealReviews, formatAverageRating, formatReviewCount } from '@/lib/review-display'
 import { cn } from '@/lib/utils'
 import type { UserRatingSummary } from '@/types/review'
@@ -84,12 +86,12 @@ export function ServiceCard({
         </div>
       </div>
 
-      <button
-        type="button"
-        className="mt-5 w-full rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/50 py-2.5 text-sm font-semibold text-gorev-snow transition group-hover:border-gorev-green-500/50 group-hover:text-gorev-green-400"
+      <Link
+        to="/kesfet"
+        className="mt-5 block w-full rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/50 py-2.5 text-center text-sm font-semibold text-gorev-snow transition group-hover:border-gorev-green-500/50 group-hover:text-gorev-green-400"
       >
-        Detayı gör
-      </button>
+        Canlı ilanları keşfet
+      </Link>
     </article>
   )
 }

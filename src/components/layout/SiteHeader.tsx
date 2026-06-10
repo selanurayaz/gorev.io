@@ -1,15 +1,18 @@
+import type { User } from '@supabase/supabase-js'
 import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { composeButtonClassName } from '@/lib/button-styles'
 import { Container } from '@/components/ui/Container'
+import { useAuth } from '@/hooks/useAuth'
+import { getUserDisplayName } from '@/lib/user-display'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
-  { href: '#populer-hizmetler', label: 'Popüler hizmetler' },
-  { href: '#nasil-calisir', label: 'Nasıl çalışır?' },
-  { href: '#ai-fiyat', label: 'AI özellikleri' },
-  { href: '#one-cikanlar', label: 'Öne çıkanlar' },
+  { href: '/#populer-hizmetler', label: 'Popüler hizmetler' },
+  { href: '/#nasil-calisir', label: 'Nasıl çalışır?' },
+  { href: '/#ai-fiyat', label: 'AI özellikleri' },
+  { href: '/#one-cikanlar', label: 'Öne çıkanlar' },
 ] as const
 
 function MenuIcon({ open }: { open: boolean }) {
@@ -42,9 +45,27 @@ function MenuIcon({ open }: { open: boolean }) {
 const linkClass =
   'relative text-sm font-medium text-gorev-muted transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-gorev-yellow-400 after:transition after:duration-200 hover:text-gorev-snow hover:after:scale-x-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gorev-yellow-400'
 
+function UserGreeting({ user }: { user: User }) {
+  const displayName = getUserDisplayName(user)
+
+  return (
+    <div
+      className="hidden max-w-[7.5rem] truncate rounded-full bg-gradient-to-br from-gorev-navy-800 to-gorev-navy-900 px-3 py-1.5 text-sm font-semibold text-gorev-snow ring-1 ring-gorev-navy-700 min-[400px]:block sm:max-w-none"
+      title={user.email ?? undefined}
+    >
+      <span className="hidden sm:inline">Merhaba, </span>
+      <span className="truncate text-gorev-yellow-400">{displayName}</span>
+    </div>
+  )
+}
+
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuId = useId()
+  const { user, isAuthenticated, isLoading } = useAuth()
+  const showGuestActions = !isLoading && !isAuthenticated
+  const showAuthenticatedActions = !isLoading && isAuthenticated
+  const homePath = !isLoading && isAuthenticated ? '/dashboard' : '/'
 
   useEffect(() => {
     if (!menuOpen) return
@@ -59,7 +80,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-gorev-navy-800/90 bg-gorev-navy-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-gorev-navy-950/75">
       <Container className="flex items-center justify-between gap-4 py-3.5 sm:py-4">
         <Link
-          to="/"
+          to={homePath}
           className="text-lg font-semibold tracking-tight text-gorev-snow transition-colors hover:text-gorev-yellow-300"
           onClick={() => setMenuOpen(false)}
         >
@@ -81,36 +102,67 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link
-            to="/giris"
-            className={composeButtonClassName(
-              'ghost',
-              'px-4 text-sm font-semibold',
-            )}
-          >
-            Giriş yap
-          </Link>
-          <Link
-            to="/kayit"
-            className={composeButtonClassName(
-              'primary',
-              'rounded-full px-6 py-2.5 text-sm shadow-lg shadow-gorev-green-500/15',
-            )}
-          >
-            Ücretsiz başla
-          </Link>
+          {showAuthenticatedActions && user ? (
+            <>
+              <UserGreeting user={user} />
+              <Link
+                to="/dashboard"
+                className={composeButtonClassName(
+                  'primary',
+                  'rounded-full px-6 py-2.5 text-sm shadow-lg shadow-gorev-green-500/15',
+                )}
+              >
+                Panele git
+              </Link>
+            </>
+          ) : null}
+          {showGuestActions ? (
+            <>
+              <Link
+                to="/giris"
+                className={composeButtonClassName(
+                  'ghost',
+                  'px-4 text-sm font-semibold',
+                )}
+              >
+                Giriş yap
+              </Link>
+              <Link
+                to="/kayit"
+                className={composeButtonClassName(
+                  'primary',
+                  'rounded-full px-6 py-2.5 text-sm shadow-lg shadow-gorev-green-500/15',
+                )}
+              >
+                Ücretsiz başla
+              </Link>
+            </>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <Link
-            to="/giris"
-            className={composeButtonClassName(
-              'ghost',
-              'px-3 text-sm font-semibold',
-            )}
-          >
-            Giriş
-          </Link>
+          {showAuthenticatedActions ? (
+            <Link
+              to="/dashboard"
+              className={composeButtonClassName(
+                'ghost',
+                'px-3 text-sm font-semibold',
+              )}
+            >
+              Panel
+            </Link>
+          ) : null}
+          {showGuestActions ? (
+            <Link
+              to="/giris"
+              className={composeButtonClassName(
+                'ghost',
+                'px-3 text-sm font-semibold',
+              )}
+            >
+              Giriş
+            </Link>
+          ) : null}
           <button
             type="button"
             className={cn(
@@ -153,16 +205,50 @@ export function SiteHeader() {
             </a>
           ))}
           <div className="mt-3 flex flex-col gap-2 border-t border-gorev-navy-800 pt-4">
-            <Link
-              to="/kayit"
-              className={composeButtonClassName(
-                'primary',
-                'w-full justify-center rounded-full py-3 text-base',
-              )}
-              onClick={() => setMenuOpen(false)}
-            >
-              Ücretsiz başla
-            </Link>
+            {showAuthenticatedActions && user ? (
+              <>
+                <p className="px-3 text-sm text-gorev-muted">
+                  Merhaba,{' '}
+                  <span className="font-semibold text-gorev-yellow-400">
+                    {getUserDisplayName(user)}
+                  </span>
+                </p>
+                <Link
+                  to="/dashboard"
+                  className={composeButtonClassName(
+                    'primary',
+                    'w-full justify-center rounded-full py-3 text-base',
+                  )}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Panele git
+                </Link>
+              </>
+            ) : null}
+            {showGuestActions ? (
+              <>
+                <Link
+                  to="/giris"
+                  className={composeButtonClassName(
+                    'outline',
+                    'w-full justify-center rounded-full py-3 text-base',
+                  )}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Giriş yap
+                </Link>
+                <Link
+                  to="/kayit"
+                  className={composeButtonClassName(
+                    'primary',
+                    'w-full justify-center rounded-full py-3 text-base',
+                  )}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Ücretsiz başla
+                </Link>
+              </>
+            ) : null}
           </div>
         </Container>
       </div>

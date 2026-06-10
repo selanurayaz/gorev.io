@@ -4,7 +4,7 @@ import { normalizeProfileRow } from '@/lib/profile-mapper'
 import {
   formatProfileFetchError,
   formatProfileSaveError,
-  isPostgrestFilterError,
+  isPostgrestSchemaError,
   logSupabaseError,
 } from '@/lib/supabase/errors'
 import { getAuthSessionContext } from '@/lib/supabase/session'
@@ -21,8 +21,6 @@ export type FetchProfileResult = {
   error: string | null
 }
 
-type ProfileIdColumn = 'id' | 'user_id'
-
 function buildProfilePayload(input: ProfileUpdateInput) {
   return {
     full_name: input.full_name.trim() || null,
@@ -38,14 +36,21 @@ function readProfileDisplayName(row: Record<string, unknown>): string | null {
   return null
 }
 
+function toProfileRows(data: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(data)) return []
+  return data.filter(
+    (row): row is Record<string, unknown> =>
+      row !== null && typeof row === 'object',
+  )
+}
+
 async function queryProfileRow(
-  column: ProfileIdColumn,
   userId: string,
 ): Promise<{ row: Record<string, unknown> | null; error: PostgrestError | null }> {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq(column, userId)
+    .eq('id', userId)
     .maybeSingle()
 
   if (error) {
@@ -60,8 +65,7 @@ async function queryProfileRow(
 }
 
 /**
- * Oturum açmış kullanıcının profil satırını getirir.
- * `id` ve `user_id` filtrelerini dener; `select('*')` ile şema uyumsuzluğu (400) riskini azaltır.
+ * Oturum açmış kullanıcının profil satırını getirir (`profiles.id` = auth UUID).
  */
 export async function fetchProfileByUserId(
   userId: string,
@@ -82,47 +86,27 @@ export async function fetchProfileByUserId(
     })
   }
 
-  const columns: ProfileIdColumn[] = ['id', 'user_id']
-  let lastError: PostgrestError | null = null
+  const { row, error } = await queryProfileRow(authUserId)
 
-  for (const column of columns) {
-    const { row, error } = await queryProfileRow(column, authUserId)
-
-    if (!error) {
-      const profile = normalizeProfileRow(row, authUserId, authEmail)
-      if (import.meta.env.DEV) {
-        console.info('[profiles] loaded', {
-          filterColumn: column,
-          userId: authUserId,
-          hasRow: Boolean(row),
-          full_name: profile?.full_name ?? null,
-        })
-      }
-      return { profile, error: null }
-    }
-
-    lastError = error
-    logSupabaseError('fetchProfileByUserId', error, {
-      column,
-      userId: authUserId,
-    })
-
-    if (!isPostgrestFilterError(error)) {
-      break
-    }
-  }
-
-  if (lastError) {
+  if (error) {
+    logSupabaseError('fetchProfileByUserId', error, { userId: authUserId })
     return {
       profile: null,
-      error: formatProfileFetchError(lastError),
+      error: formatProfileFetchError(error),
     }
   }
 
-  return {
-    profile: normalizeProfileRow(null, authUserId, authEmail),
-    error: null,
+  const profile = normalizeProfileRow(row, authUserId, authEmail)
+
+  if (import.meta.env.DEV) {
+    console.info('[profiles] loaded', {
+      userId: authUserId,
+      hasRow: Boolean(row),
+      full_name: profile?.full_name ?? null,
+    })
   }
+
+  return { profile, error: null }
 }
 
 export type UpdateProfileResult = {
@@ -199,7 +183,20 @@ export async function updateProfileByUserId(
   return { profile, error: null }
 }
 
-/** Marketplace için görev sahibi adlarını toplu getirir. */
+function assignProfileNames(
+  rows: Record<string, unknown>[],
+  nameMap: Map<string, string>,
+): void {
+  for (const record of rows) {
+    const name = readProfileDisplayName(record)
+    if (!name) continue
+
+    const id = record.id != null ? String(record.id) : null
+    if (id) nameMap.set(id, name)
+  }
+}
+
+/** Kullanıcı adlarını `profiles.id` ile toplu getirir. */
 export async function fetchProfileNamesByIds(
   userIds: string[],
 ): Promise<Map<string, string>> {
@@ -208,47 +205,33 @@ export async function fetchProfileNamesByIds(
 
   const nameMap = new Map<string, string>()
 
-  const assignRows = (rows: unknown) => {
-    if (!Array.isArray(rows)) return
-    for (const row of rows) {
-      if (!row || typeof row !== 'object') continue
-      const record = row as Record<string, unknown>
-      const name = readProfileDisplayName(record)
-      if (!name) continue
-
-      const id = record.id != null ? String(record.id) : null
-      const userId =
-        record.user_id != null ? String(record.user_id) : null
-
-      if (id) nameMap.set(id, name)
-      if (userId) nameMap.set(userId, name)
-    }
-  }
-
-  const byId = await supabase
+  const response = await supabase
     .from('profiles')
-    .select('id, user_id, full_name, display_name, name')
+    .select('id, full_name')
     .in('id', uniqueIds)
 
-  if (!byId.error) {
-    assignRows(byId.data)
-  } else {
-    logSupabaseError('fetchProfileNamesByIds.id', byId.error)
+  if (!response.error) {
+    assignProfileNames(toProfileRows(response.data), nameMap)
+    return nameMap
   }
 
-  const missing = uniqueIds.filter((id) => !nameMap.has(id))
-  if (missing.length > 0) {
-    const byUserId = await supabase
-      .from('profiles')
-      .select('id, user_id, full_name, display_name, name')
-      .in('user_id', missing)
+  if (isPostgrestSchemaError(response.error)) {
+    const fallback = await supabase.from('profiles').select('*').in('id', uniqueIds)
 
-    if (!byUserId.error) {
-      assignRows(byUserId.data)
-    } else {
-      logSupabaseError('fetchProfileNamesByIds.user_id', byUserId.error)
+    if (!fallback.error) {
+      assignProfileNames(toProfileRows(fallback.data), nameMap)
+      return nameMap
     }
+
+    logSupabaseError('fetchProfileNamesByIds.fallback', fallback.error, {
+      count: uniqueIds.length,
+    })
+    return nameMap
   }
+
+  logSupabaseError('fetchProfileNamesByIds', response.error, {
+    count: uniqueIds.length,
+  })
 
   return nameMap
 }

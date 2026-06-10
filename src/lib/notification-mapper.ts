@@ -8,6 +8,9 @@ const NOTIFICATION_TYPES: NotificationType[] = [
   'offer_received',
   'offer_accepted',
   'offer_rejected',
+  'service_request_received',
+  'service_request_accepted',
+  'service_request_rejected',
   'message_received',
 ]
 
@@ -18,6 +21,16 @@ function parseNotificationType(value: unknown): NotificationType {
 
   if (NOTIFICATION_TYPES.includes(normalized as NotificationType)) {
     return normalized as NotificationType
+  }
+
+  if (normalized.includes('service') && normalized.includes('request')) {
+    if (normalized.includes('accept')) {
+      return 'service_request_accepted'
+    }
+    if (normalized.includes('reject')) {
+      return 'service_request_rejected'
+    }
+    return 'service_request_received'
   }
 
   if (normalized.includes('offer') && normalized.includes('accept')) {
@@ -50,9 +63,11 @@ function parseMetadata(value: unknown): NotificationMetadata | null {
   const otherUserId =
     record.other_user_id ?? record.otherUserId ?? record.sender_id
   const messageId = record.message_id ?? record.messageId
+  const serviceId = record.service_id ?? record.serviceId
 
   if (taskId != null) metadata.task_id = String(taskId)
   if (offerId != null) metadata.offer_id = String(offerId)
+  if (serviceId != null) metadata.service_id = String(serviceId)
   if (otherUserId != null) metadata.other_user_id = String(otherUserId)
   if (messageId != null) metadata.message_id = String(messageId)
 

@@ -99,8 +99,8 @@ export function AiPriceSuggestionPanel({
             AI fiyat asistanı
           </p>
           <p className="mt-1 text-xs leading-relaxed text-gorev-muted">
-            Başlık, açıklama, kategori ve şehre göre Türkiye pazarı için fiyat
-            aralığı önerisi alın.
+            Başlık, açıklama, kategori ve şehre göre Türkiye pazarı için tahmini
+            fiyat aralığı önerisi alın. Sonuçlar bağlayıcı değildir.
           </p>
         </div>
         <Button

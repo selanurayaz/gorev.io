@@ -55,6 +55,7 @@ export async function notifyOfferReceived(input: {
 /** Hizmet verene teklif kabul bildirimi. */
 export async function notifyOfferAccepted(input: {
   providerId: string
+  customerId: string
   offerId: string
   taskId: TaskId
 }): Promise<void> {
@@ -68,6 +69,7 @@ export async function notifyOfferAccepted(input: {
     metadata: {
       task_id: input.taskId,
       offer_id: input.offerId,
+      other_user_id: input.customerId,
     },
   })
 }

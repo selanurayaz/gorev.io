@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 
 import { AuthAlert } from '@/components/auth/AuthAlert'
 import { OfferForm } from '@/components/offers/OfferForm'
@@ -14,6 +14,7 @@ import { composeButtonClassName } from '@/lib/button-styles'
 import type { TaskId } from '@/types/index'
 
 export function TaskDetailPage() {
+  const location = useLocation()
   const { taskId } = useParams<{ taskId: string }>()
   const id = taskId as TaskId | undefined
 
@@ -38,7 +39,7 @@ export function TaskDetailPage() {
 
   return (
     <div className="border-b border-gorev-navy-800/80 bg-gorev-navy-950 pb-16 pt-6 sm:pt-10">
-      <Container className="max-w-3xl space-y-6">
+      <Container className="min-w-0 max-w-3xl space-y-6">
         <Link
           to="/kesfet"
           className="inline-flex text-sm font-medium text-gorev-yellow-400 transition hover:text-gorev-yellow-300"
@@ -106,6 +107,7 @@ export function TaskDetailPage() {
                 </p>
                 <Link
                   to="/giris"
+                  state={{ from: location }}
                   className={composeButtonClassName(
                     'primary',
                     'mt-5 inline-flex min-h-11 items-center justify-center px-8',

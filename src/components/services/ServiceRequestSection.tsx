@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { AuthAlert } from '@/components/auth/AuthAlert'
 import { Button } from '@/components/ui/Button'
@@ -24,6 +24,8 @@ export function ServiceRequestSection({
   successMessage,
   onRequest,
 }: ServiceRequestSectionProps) {
+  const location = useLocation()
+
   if (isOwner) {
     return (
       <section className="rounded-2xl border border-gorev-navy-800 bg-gorev-navy-900/40 p-5">
@@ -49,6 +51,7 @@ export function ServiceRequestSection({
         </p>
         <Link
           to="/giris"
+          state={{ from: location }}
           className={composeButtonClassName(
             'primary',
             'mt-4 inline-flex min-h-11 items-center justify-center px-6',

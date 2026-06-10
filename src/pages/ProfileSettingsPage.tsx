@@ -3,7 +3,7 @@ import { DashboardCard } from '@/components/dashboard/DashboardCard'
 
 export function ProfileSettingsPage() {
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto min-w-0 max-w-2xl">
       <DashboardCard
         title="Profil ayarları"
         action={

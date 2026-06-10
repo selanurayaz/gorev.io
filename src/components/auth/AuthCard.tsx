@@ -18,7 +18,7 @@ export function AuthCard({
   return (
     <section
       className={cn(
-        'w-full max-w-md rounded-[1.75rem] border border-gorev-navy-800 bg-gradient-to-b from-gorev-navy-900/75 to-gorev-navy-950/95 p-8 shadow-[0_24px_80px_-32px_rgba(0,0,0,0.85)] shadow-black/50 sm:p-10',
+        'w-full max-w-md rounded-[1.75rem] border border-gorev-navy-800 bg-gradient-to-b from-gorev-navy-900/75 to-gorev-navy-950/95 p-6 shadow-[0_24px_80px_-32px_rgba(0,0,0,0.85)] shadow-black/50 sm:p-8 lg:p-10',
         className,
       )}
       aria-labelledby="auth-card-title"

@@ -6,42 +6,42 @@ const columns = [
   {
     title: 'Ürün',
     links: [
-      { label: 'Popüler hizmetler', href: '#populer-hizmetler' },
-      { label: 'Nasıl çalışır?', href: '#nasil-calisir' },
-      { label: 'AI özellikleri', href: '#ai-fiyat' },
-      { label: 'Öne çıkanlar', href: '#one-cikanlar' },
+      { label: 'Görev Keşfet', href: '/kesfet', isRoute: true },
+      { label: 'Popüler hizmetler', href: '/#populer-hizmetler', isRoute: false },
+      { label: 'Nasıl çalışır?', href: '/#nasil-calisir', isRoute: false },
+      { label: 'AI özellikleri', href: '/#ai-fiyat', isRoute: false },
     ],
   },
   {
-    title: 'Şirket',
+    title: 'Hesap',
     links: [
-      { label: 'Hakkımızda', href: '#' },
-      { label: 'Kariyer', href: '#' },
-      { label: 'Basın', href: '#' },
+      { label: 'Kayıt ol', href: '/kayit', isRoute: true },
+      { label: 'Giriş yap', href: '/giris', isRoute: true },
+      { label: 'Görev oluştur', href: '/dashboard/gorev-olustur', isRoute: true },
     ],
   },
   {
     title: 'Destek',
     links: [
-      { label: 'Yardım merkezi', href: '#' },
-      { label: 'Güvenlik', href: '#' },
-      { label: 'Topluluk kuralları', href: '#' },
+      { label: 'Mesajlar', href: '/dashboard/mesajlar', isRoute: true },
+      { label: 'Teklifler', href: '/dashboard/teklifler', isRoute: true },
+      { label: 'Nasıl çalışır?', href: '/#nasil-calisir', isRoute: false },
     ],
   },
   {
     title: 'Yasal',
     links: [
-      { label: 'Kullanım şartları', href: '#' },
-      { label: 'Gizlilik', href: '#' },
-      { label: 'Çerezler', href: '#' },
+      { label: 'Kayıt ve şartlar', href: '/kayit', isRoute: true },
+      { label: 'Gizlilik', href: '/kayit', isRoute: true },
+      { label: 'Örnek içerik notu', href: '/#one-cikanlar', isRoute: false },
     ],
   },
 ] as const
 
 const social = [
-  { label: 'X', href: '#' },
-  { label: 'LinkedIn', href: '#' },
-  { label: 'Instagram', href: '#' },
+  { label: 'Keşfet', href: '/kesfet', isRoute: true },
+  { label: 'Kayıt', href: '/kayit', isRoute: true },
+  { label: 'Ana sayfa', href: '/', isRoute: true },
 ] as const
 
 export function SiteFooter() {
@@ -77,12 +77,12 @@ export function SiteFooter() {
                       ·
                     </span>
                   ) : null}
-                  <a
-                    href={s.href}
+                  <Link
+                    to={s.href}
                     className="font-medium text-gorev-muted transition hover:text-gorev-snow"
                   >
                     {s.label}
-                  </a>
+                  </Link>
                 </span>
               ))}
             </div>
@@ -100,12 +100,21 @@ export function SiteFooter() {
                 <ul className="mt-5 space-y-3 text-sm">
                   {col.links.map((link) => (
                     <li key={link.label}>
-                      <a
-                        href={link.href}
-                        className="text-gorev-muted transition hover:text-gorev-snow"
-                      >
-                        {link.label}
-                      </a>
+                      {link.isRoute ? (
+                        <Link
+                          to={link.href}
+                          className="text-gorev-muted transition hover:text-gorev-snow"
+                        >
+                          {link.label}
+                        </Link>
+                      ) : (
+                        <a
+                          href={link.href}
+                          className="text-gorev-muted transition hover:text-gorev-snow"
+                        >
+                          {link.label}
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>

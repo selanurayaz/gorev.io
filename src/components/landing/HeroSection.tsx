@@ -1,4 +1,6 @@
-import { Button } from '@/components/ui/Button'
+import { Link } from 'react-router-dom'
+
+import { composeButtonClassName } from '@/lib/button-styles'
 import { Container } from '@/components/ui/Container'
 
 const trustItems = [
@@ -23,7 +25,7 @@ export function HeroSection() {
         aria-hidden
       />
 
-      <Container className="relative py-20 sm:py-28 lg:py-32">
+      <Container className="relative py-14 sm:py-28 lg:py-32">
         <div className="mx-auto max-w-4xl text-center">
           <p className="inline-flex items-center gap-2 rounded-full border border-gorev-navy-700/90 bg-gorev-navy-900/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-gorev-muted shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset]">
             <span
@@ -38,7 +40,7 @@ export function HeroSection() {
             sade arayüz.
           </p>
 
-          <h1 className="mt-6 text-balance text-5xl font-semibold tracking-tight text-gorev-snow sm:text-6xl lg:text-7xl lg:leading-[1.05]">
+          <h1 className="mt-6 text-balance text-[2rem] font-semibold leading-tight tracking-tight text-gorev-snow min-[375px]:text-4xl sm:text-5xl sm:leading-tight lg:text-7xl lg:leading-[1.05]">
             Kısa süreli işler için{' '}
             <span className="bg-gradient-to-r from-gorev-yellow-300 via-gorev-yellow-400 to-gorev-green-400 bg-clip-text text-transparent">
               güvenilir eşleşme
@@ -48,8 +50,8 @@ export function HeroSection() {
 
           <p className="mx-auto mt-8 max-w-2xl text-pretty text-lg leading-relaxed text-gorev-muted sm:text-xl">
             görev.io; temizlikten taşıma yardımına, grafik tasarımdan yazılım
-            desteğine kadar talepleri doğru uzmanlarla buluşturur. İstersen yerinde,
-            istersen uzaktan — tek çatı altında.
+            desteğine kadar talepleri doğru uzmanlarla buluşturur. İsterseniz yerinde,
+            isterseniz uzaktan — tek çatı altında.
           </p>
 
           <div className="mx-auto mt-12 max-w-xl">
@@ -64,24 +66,41 @@ export function HeroSection() {
                 placeholder="Örn. Kadıköy’de 2 saat ofis temizliği"
                 className="min-h-12 flex-1 rounded-xl border border-transparent bg-gorev-navy-950/85 px-4 text-sm text-gorev-snow placeholder:text-gorev-muted focus:border-gorev-yellow-400/35 focus:outline-none focus:ring-2 focus:ring-gorev-yellow-400/25"
               />
-              <Button
-                type="button"
-                variant="secondary"
-                className="min-h-12 shrink-0 px-6 sm:w-auto"
+              <Link
+                to="/kesfet"
+                className={composeButtonClassName(
+                  'secondary',
+                  'min-h-12 shrink-0 justify-center px-6 sm:w-auto',
+                )}
               >
                 Görevleri keşfet
-              </Button>
+              </Link>
             </div>
             <p className="mt-3 text-center text-xs leading-relaxed text-gorev-muted">
-              Akıllı arama yakında. Şimdilik menüden bölümlere atlayabilirsin.
+              Akıllı arama yakında. Şimdilik Keşfet sayfasından canlı ilanlara
+              göz atabilirsiniz.
             </p>
           </div>
 
           <div className="mt-12 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:justify-center">
-            <Button className="min-h-12 px-9 text-base">Görev oluştur</Button>
-            <Button variant="outline" className="min-h-12 px-9 text-base">
+            <Link
+              to="/dashboard/gorev-olustur"
+              className={composeButtonClassName(
+                'primary',
+                'min-h-12 justify-center px-9 text-base',
+              )}
+            >
+              Görev oluştur
+            </Link>
+            <Link
+              to="/kayit"
+              className={composeButtonClassName(
+                'outline',
+                'min-h-12 justify-center px-9 text-base',
+              )}
+            >
               Hizmet ver — ücretsiz kayıt
-            </Button>
+            </Link>
           </div>
 
           <ul
@@ -102,6 +121,9 @@ export function HeroSection() {
               </li>
             ))}
           </ul>
+          <p className="mt-4 text-center text-xs text-gorev-muted">
+            Gösterilen rakamlar örnek vitrin verisidir.
+          </p>
         </div>
       </Container>
     </div>

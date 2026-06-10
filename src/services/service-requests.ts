@@ -676,17 +676,139 @@ export async function requestService(
   }
 }
 
-type ServiceRequestQueryMode = 'with_joins' | 'plain'
+type ServiceRequestQueryMode = 'with_task' | 'plain'
+
+function readEmbeddedTaskRow(
+  row: Record<string, unknown>,
+): Record<string, unknown> | null {
+  const taskEmbedded = row.tasks ?? row.task
+  if (!taskEmbedded || typeof taskEmbedded !== 'object') return null
+
+  if (Array.isArray(taskEmbedded)) {
+    const first = taskEmbedded[0]
+    return first && typeof first === 'object'
+      ? (first as Record<string, unknown>)
+      : null
+  }
+
+  return taskEmbedded as Record<string, unknown>
+}
+
+function collectSourceServiceIds(rows: Record<string, unknown>[]): string[] {
+  const ids = new Set<string>()
+
+  for (const row of rows) {
+    const taskRow = readEmbeddedTaskRow(row)
+    if (!taskRow) continue
+
+    const sourceId = readSourceServiceId(taskRow)
+    if (sourceId) ids.add(sourceId)
+  }
+
+  return [...ids]
+}
+
+async function fetchServiceTitlesByIds(
+  serviceIds: string[],
+): Promise<Map<string, string>> {
+  const uniqueIds = [...new Set(serviceIds.filter(Boolean))]
+  if (uniqueIds.length === 0) return new Map()
+
+  const { data, error } = await supabase
+    .from('services')
+    .select('id, title')
+    .in('id', uniqueIds)
+
+  if (error) {
+    if (!isPostgrestSchemaError(error)) {
+      logSupabaseError('fetchServiceTitlesByIds', error, {
+        count: uniqueIds.length,
+      })
+    }
+    return new Map()
+  }
+
+  const titles = new Map<string, string>()
+  for (const row of toRows(data)) {
+    const id = row.id != null ? String(row.id) : null
+    const title = row.title != null ? String(row.title).trim() : null
+    if (id && title) titles.set(id, title)
+  }
+
+  return titles
+}
+
+function isServiceRequestOfferRow(
+  row: Record<string, unknown>,
+  serviceRequestTaskIds: Set<string>,
+): boolean {
+  const taskId = row.task_id ?? row.taskId
+  if (taskId != null && serviceRequestTaskIds.has(String(taskId))) {
+    return true
+  }
+
+  const taskRow = readEmbeddedTaskRow(row)
+  if (taskRow && isServiceRequestTaskRow(taskRow)) {
+    return true
+  }
+
+  const message = String(row.message ?? '').trim()
+  return message === SERVICE_REQUEST_OFFER_MESSAGE
+}
+
+async function enrichOfferRowsWithTasks(
+  rows: Record<string, unknown>[],
+): Promise<Record<string, unknown>[]> {
+  const needsTask = rows.filter((row) => !readEmbeddedTaskRow(row))
+  if (needsTask.length === 0) return rows
+
+  const taskIds = [
+    ...new Set(
+      needsTask
+        .map((row) => row.task_id ?? row.taskId)
+        .filter((id): id is string | number => id != null)
+        .map(String),
+    ),
+  ]
+
+  if (taskIds.length === 0) return rows
+
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('id, title, city, customer_id, source_service_id')
+    .in('id', taskIds)
+
+  if (error || !Array.isArray(data)) {
+    if (error && !isPostgrestSchemaError(error)) {
+      logSupabaseError('enrichOfferRowsWithTasks', error, { count: taskIds.length })
+    }
+    return rows
+  }
+
+  const taskById = new Map(
+    toRows(data).map((task) => [String(task.id), task]),
+  )
+
+  return rows.map((row) => {
+    if (readEmbeddedTaskRow(row)) return row
+
+    const taskId = row.task_id ?? row.taskId
+    if (taskId == null) return row
+
+    const task = taskById.get(String(taskId))
+    return task ? { ...row, tasks: task } : row
+  })
+}
 
 async function queryProviderServiceRequests(
   providerId: string,
   mode: ServiceRequestQueryMode,
 ): Promise<{ rows: Record<string, unknown>[]; error: PostgrestError | null }> {
   const response =
-    mode === 'with_joins'
+    mode === 'with_task'
       ? await supabase
           .from('offers')
-          .select('*, tasks(title, city, customer_id, source_service_id), services(title)')
+          .select('*, tasks(title, city, customer_id, source_service_id)')
           .eq('provider_id', providerId)
           .order('created_at', { ascending: false })
       : await supabase
@@ -710,7 +832,7 @@ export async function fetchServiceRequestsForProvider(): Promise<FetchServiceReq
   }
 
   const { userId } = auth.session
-  const modes: ServiceRequestQueryMode[] = ['with_joins', 'plain']
+  const modes: ServiceRequestQueryMode[] = ['with_task', 'plain']
   let lastError: PostgrestError | null = null
   const serviceRequestTaskIds = await loadServiceRequestTaskIds()
 
@@ -718,27 +840,20 @@ export async function fetchServiceRequestsForProvider(): Promise<FetchServiceReq
     const { rows, error } = await queryProviderServiceRequests(userId, mode)
 
     if (!error) {
-      const filtered = rows.filter((row) => {
-        const taskId = row.task_id ?? row.taskId
-        if (taskId != null && serviceRequestTaskIds.has(String(taskId))) {
-          return true
-        }
+      const filtered = rows.filter((row) =>
+        isServiceRequestOfferRow(row, serviceRequestTaskIds),
+      )
 
-        const taskEmbedded = row.tasks ?? row.task
-        if (taskEmbedded && typeof taskEmbedded === 'object') {
-          const task =
-            Array.isArray(taskEmbedded) && taskEmbedded[0]
-              ? (taskEmbedded[0] as Record<string, unknown>)
-              : (taskEmbedded as Record<string, unknown>)
-          return isServiceRequestTaskRow(task)
-        }
-
-        return row.service_id != null
-      })
+      const enriched = await enrichOfferRowsWithTasks(filtered)
+      const serviceTitles = await fetchServiceTitlesByIds(
+        collectSourceServiceIds(enriched),
+      )
 
       let customerNames = new Map<string, string>()
-      let requests = filtered
-        .map((row) => normalizeServiceRequestRow(row, customerNames))
+      let requests = enriched
+        .map((row) =>
+          normalizeServiceRequestRow(row, customerNames, serviceTitles),
+        )
         .filter((item): item is ServiceRequestItem => item !== null)
 
       const missingCustomerIds = [
@@ -751,8 +866,10 @@ export async function fetchServiceRequestsForProvider(): Promise<FetchServiceReq
 
       if (missingCustomerIds.length > 0) {
         customerNames = await fetchProfileNamesByIds(missingCustomerIds)
-        requests = filtered
-          .map((row) => normalizeServiceRequestRow(row, customerNames))
+        requests = enriched
+          .map((row) =>
+            normalizeServiceRequestRow(row, customerNames, serviceTitles),
+          )
           .filter((item): item is ServiceRequestItem => item !== null)
       }
 
@@ -827,7 +944,12 @@ async function getServiceRequestForProvider(
       }
     }
 
-    const record = response.data as Record<string, unknown>
+    let record = response.data as Record<string, unknown>
+    if (!readEmbeddedTaskRow(record)) {
+      const [enriched] = await enrichOfferRowsWithTasks([record])
+      record = enriched
+    }
+
     const offer = normalizeOfferRow(record)
     if (!offer) {
       return {
@@ -847,16 +969,18 @@ async function getServiceRequestForProvider(
       }
     }
 
-    const taskEmbedded = record.tasks ?? record.task
+    const taskRow = readEmbeddedTaskRow(record)
     let customerId: string | null = null
-    let isServiceRequest = record.service_id != null
+    const offerMessage = String(record.message ?? offer.message ?? '').trim()
+    let isServiceRequest =
+      offerMessage === SERVICE_REQUEST_OFFER_MESSAGE ||
+      (taskRow != null && isServiceRequestTaskRow(taskRow))
 
-    if (taskEmbedded && typeof taskEmbedded === 'object' && !Array.isArray(taskEmbedded)) {
-      const task = taskEmbedded as Record<string, unknown>
+    if (taskRow) {
       customerId =
-        task.customer_id != null ? String(task.customer_id) : null
+        taskRow.customer_id != null ? String(taskRow.customer_id) : null
       isServiceRequest =
-        isServiceRequest || readSourceServiceId(task) != null
+        isServiceRequest || readSourceServiceId(taskRow) != null
     }
 
     if (!isServiceRequest) {

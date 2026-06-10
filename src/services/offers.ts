@@ -902,6 +902,7 @@ export async function acceptOffer(offerId: string): Promise<OfferActionResult> {
 
   void notifyOfferAccepted({
     providerId: row.offer.provider_id,
+    customerId: row.customerId,
     offerId,
     taskId: row.taskId,
   })

@@ -14,7 +14,7 @@ export function MessageBubble({ message, isOwn }: MessageBubbleProps) {
     >
       <div
         className={cn(
-          'max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm sm:max-w-[70%]',
+          'max-w-[min(88%,18rem)] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm sm:max-w-[70%] sm:px-4',
           isOwn
             ? 'rounded-br-md bg-gorev-yellow-400/15 text-gorev-snow ring-1 ring-gorev-yellow-400/25'
             : 'rounded-bl-md border border-gorev-navy-700 bg-gorev-navy-900/80 text-gorev-snow',

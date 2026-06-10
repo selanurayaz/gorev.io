@@ -93,7 +93,7 @@ export function NotificationBell() {
         <div
           id={menuId}
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-[min(100vw-2rem,22rem)] overflow-hidden rounded-2xl border border-gorev-navy-700 bg-gorev-navy-950 shadow-2xl shadow-black/40"
+          className="fixed left-3 right-3 top-[3.75rem] z-50 max-h-[min(70dvh,24rem)] overflow-hidden overflow-y-auto rounded-2xl border border-gorev-navy-700 bg-gorev-navy-950 shadow-2xl shadow-black/40 sm:absolute sm:inset-x-auto sm:right-0 sm:left-auto sm:top-full sm:mt-2 sm:max-h-none sm:w-[min(100vw-2rem,22rem)]"
         >
           <div className="flex items-center justify-between gap-2 border-b border-gorev-navy-800 px-4 py-3">
             <p className="text-sm font-semibold text-gorev-snow">Bildirimler</p>

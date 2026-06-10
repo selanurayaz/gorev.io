@@ -39,12 +39,12 @@ export function ServiceDetailPage() {
 
   return (
     <div className="border-b border-gorev-navy-800/80 bg-gorev-navy-950 pb-16 pt-6 sm:pt-10">
-      <Container className="max-w-3xl space-y-6">
+      <Container className="min-w-0 max-w-3xl space-y-6">
         <Link
           to="/kesfet"
           className="inline-flex text-sm font-medium text-gorev-yellow-400 transition hover:text-gorev-yellow-300"
         >
-          ← Görev Keşfet
+          ← Keşfet
         </Link>
 
         {isLoading ? (

@@ -55,11 +55,13 @@ export function MessageThread({ conversation, onMessageSent }: MessageThreadProp
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <header className="border-b border-gorev-navy-800 px-4 py-3 sm:px-5">
-        <p className="font-semibold text-gorev-snow">
+      <header className="min-w-0 border-b border-gorev-navy-800 px-4 py-3 sm:px-5">
+        <p className="truncate font-semibold text-gorev-snow">
           {conversation.other_user_name ?? 'Kullanıcı'}
         </p>
-        <p className="text-xs text-gorev-muted">{conversation.task_title}</p>
+        <p className="truncate text-xs text-gorev-muted">
+          {conversation.task_title}
+        </p>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">

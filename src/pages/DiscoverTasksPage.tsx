@@ -31,7 +31,7 @@ export function DiscoverTasksPage() {
     <div className="border-b border-gorev-navy-800/80 bg-gradient-to-b from-gorev-navy-900/50 to-gorev-navy-950 pb-16 pt-8 sm:pt-12">
       <Container>
         <div className="space-y-8">
-          <header className="relative overflow-hidden rounded-2xl border border-gorev-navy-800 bg-gradient-to-br from-gorev-navy-900 via-gorev-navy-950 to-gorev-navy-900 p-6 sm:p-8">
+          <header className="relative overflow-hidden rounded-2xl border border-gorev-navy-800 bg-gradient-to-br from-gorev-navy-900 via-gorev-navy-950 to-gorev-navy-900 p-5 sm:p-8">
             <div
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_100%_0%,rgba(250,204,21,0.08),transparent_50%)]"
               aria-hidden
@@ -45,7 +45,7 @@ export function DiscoverTasksPage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gorev-green-400">
                   Marketplace
                 </p>
-                <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gorev-snow sm:text-4xl">
+                <h1 className="mt-2 text-2xl font-semibold tracking-tight text-gorev-snow sm:text-3xl lg:text-4xl">
                   Görev Keşfet
                 </h1>
                 <p className="mt-3 text-sm leading-relaxed text-gorev-muted sm:text-base">

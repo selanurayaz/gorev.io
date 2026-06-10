@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { AuthAlert } from '@/components/auth/AuthAlert'
@@ -20,6 +20,12 @@ export function MessagesPage() {
   const taskParam = searchParams.get('gorev')
   const withParam = searchParams.get('karsi')
   const currentUserId = user?.id
+
+  useEffect(() => {
+    if (taskParam && withParam) {
+      setMobileShowThread(true)
+    }
+  }, [taskParam, withParam])
 
   let selectedConversation: Conversation | null = null
 
@@ -58,12 +64,12 @@ export function MessagesPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-8.5rem)] max-w-5xl flex-col gap-4 sm:min-h-[calc(100dvh-9rem)]">
-      <header className="shrink-0">
+    <div className="mx-auto flex min-h-0 w-full min-w-0 max-w-5xl flex-col gap-4">
+      <header className="shrink-0 min-w-0">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gorev-green-400">
           İletişim
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-gorev-snow">
+        <h1 className="mt-1 text-xl font-semibold tracking-tight text-gorev-snow sm:text-2xl">
           Mesajlar
         </h1>
         <p className="mt-1 text-sm text-gorev-muted">
@@ -85,16 +91,14 @@ export function MessagesPage() {
         </div>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 overflow-hidden rounded-2xl border border-gorev-navy-800 bg-gorev-navy-900/30">
+      <div className="flex min-h-[min(72dvh,40rem)] min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gorev-navy-800 bg-gorev-navy-900/30 md:flex-row sm:min-h-[min(68dvh,36rem)]">
         <aside
-          className={`flex w-full flex-col border-gorev-navy-800 md:w-80 md:shrink-0 md:border-r ${
+          className={`flex min-h-0 min-w-0 w-full flex-col border-gorev-navy-800 md:w-80 md:shrink-0 md:border-r ${
             mobileShowThread ? 'hidden md:flex' : 'flex'
           }`}
         >
           <div className="border-b border-gorev-navy-800 px-4 py-3">
-            <h2 className="text-sm font-semibold text-gorev-snow">
-              Sohbetler
-            </h2>
+            <h2 className="text-sm font-semibold text-gorev-snow">Sohbetler</h2>
           </div>
 
           {isLoading ? (
@@ -137,7 +141,7 @@ export function MessagesPage() {
           {mobileShowThread ? (
             <button
               type="button"
-              className="border-b border-gorev-navy-800 px-4 py-2 text-left text-sm font-medium text-gorev-yellow-400 md:hidden"
+              className="min-h-11 border-b border-gorev-navy-800 px-4 py-3 text-left text-sm font-medium text-gorev-yellow-400 md:hidden"
               onClick={handleBackToList}
             >
               ← Sohbetlere dön

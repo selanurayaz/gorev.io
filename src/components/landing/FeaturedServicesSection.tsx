@@ -12,7 +12,7 @@ export function FeaturedServicesSection() {
         <SectionHeading
           eyebrow="Öne çıkanlar"
           title="Gerçekçi mikro hizmet örnekleri"
-          description="Canlıya hazır vitrin kartları — yakında filtreler, güvenli ödeme ve mesajlaşma ile tamamlanacak."
+          description="Örnek vitrin kartları — canlı görev ve hizmet ilanları Keşfet sayfasında."
         />
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

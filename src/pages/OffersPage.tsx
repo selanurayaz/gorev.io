@@ -81,7 +81,7 @@ export function OffersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto min-w-0 max-w-3xl space-y-6">
       <header>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gorev-green-400">
           Teklif yönetimi

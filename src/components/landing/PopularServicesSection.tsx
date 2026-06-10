@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { popularServices } from '@/data/landing-content'
 
 import { LandingSection } from '@/components/landing/LandingSection'
@@ -12,14 +14,14 @@ export function PopularServicesSection() {
         <SectionHeading
           eyebrow="Popüler hizmetler"
           title="En çok talep gören kategoriler"
-          description="Gerçek yaşamdan örneklerle özetlendi — sen görevini yaz, doğru uzmanlar öne çıksın."
+          description="Gerçek yaşamdan örneklerle özetlendi — görevinizi yazın, doğru uzmanlar öne çıksın."
         />
 
         <ul className="mt-14 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {popularServices.map((svc) => (
             <li key={svc.id}>
-              <button
-                type="button"
+              <Link
+                to="/kesfet"
                 className="flex h-full w-full flex-col rounded-2xl border border-gorev-navy-800 bg-gorev-navy-900/35 p-6 text-left transition duration-200 hover:-translate-y-0.5 hover:border-gorev-green-500/35 hover:bg-gorev-navy-900/65 hover:shadow-lg hover:shadow-black/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gorev-yellow-400"
               >
                 <ServiceCategoryIcon name={svc.icon} />
@@ -29,7 +31,7 @@ export function PopularServicesSection() {
                 <span className="mt-2 text-sm leading-relaxed text-gorev-muted">
                   {svc.description}
                 </span>
-              </button>
+              </Link>
             </li>
           ))}
         </ul>

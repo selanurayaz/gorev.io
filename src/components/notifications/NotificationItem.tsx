@@ -60,7 +60,7 @@ export function NotificationItem({
               <span className="h-2 w-2 shrink-0 rounded-full bg-gorev-yellow-400" />
             ) : null}
           </div>
-          <p className="text-sm font-medium text-gorev-snow">
+          <p className="break-words text-sm font-medium text-gorev-snow">
             {notification.title}
           </p>
           <p className="mt-0.5 line-clamp-2 text-sm text-gorev-muted">

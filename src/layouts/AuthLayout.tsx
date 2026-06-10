@@ -32,7 +32,7 @@ export function AuthLayout() {
         </Container>
       </header>
 
-      <main className="relative flex flex-1 flex-col justify-center px-4 py-12 sm:py-16">
+      <main className="relative flex min-w-0 flex-1 flex-col justify-center px-3 py-10 sm:px-4 sm:py-16">
         <Container className="flex justify-center">
           <Outlet />
         </Container>
@@ -42,12 +42,12 @@ export function AuthLayout() {
         <Container>
           <p>
             Sorun mu yaşıyorsun?{' '}
-            <a
-              href="#"
+            <Link
+              to="/kesfet"
               className="font-medium text-gorev-yellow-400/90 underline-offset-4 transition hover:text-gorev-yellow-300 hover:underline"
             >
-              Yardım merkezi
-            </a>
+              Keşfet sayfasına git
+            </Link>
           </p>
         </Container>
       </footer>

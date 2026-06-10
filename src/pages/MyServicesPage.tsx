@@ -21,7 +21,7 @@ export function MyServicesPage() {
     useMyServices()
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5">
+    <div className="mx-auto min-w-0 max-w-4xl space-y-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gorev-green-400">

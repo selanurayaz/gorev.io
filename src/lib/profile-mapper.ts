@@ -21,10 +21,7 @@ export function normalizeProfileRow(
 ): Profile | null {
   if (!row) return null
 
-  const id =
-    pickString(row, ['id']) ??
-    pickString(row, ['user_id']) ??
-    authUserId
+  const id = pickString(row, ['id']) ?? authUserId
 
   const full_name = pickString(row, [
     'full_name',

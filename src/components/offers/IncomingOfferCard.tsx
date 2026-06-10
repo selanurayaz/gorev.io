@@ -28,7 +28,7 @@ export function IncomingOfferCard({
   const canRespond = canRespondToOffer(offer.status)
 
   return (
-    <article className="rounded-2xl border border-gorev-navy-800 bg-gradient-to-b from-gorev-navy-900/80 to-gorev-navy-950/90 p-5 transition hover:border-gorev-navy-700">
+    <article className="min-w-0 rounded-2xl border border-gorev-navy-800 bg-gradient-to-b from-gorev-navy-900/80 to-gorev-navy-950/90 p-4 transition hover:border-gorev-navy-700 sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <Link

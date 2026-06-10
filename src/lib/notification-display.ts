@@ -8,6 +8,12 @@ export function getNotificationTypeLabel(type: NotificationType): string {
       return 'Teklif kabul edildi'
     case 'offer_rejected':
       return 'Teklif reddedildi'
+    case 'service_request_received':
+      return 'Yeni hizmet talebi'
+    case 'service_request_accepted':
+      return 'Hizmet talebi kabul edildi'
+    case 'service_request_rejected':
+      return 'Hizmet talebi reddedildi'
     case 'message_received':
       return 'Yeni mesaj'
     default:
@@ -22,10 +28,14 @@ export function getNotificationTypeTone(
     case 'offer_accepted':
       return 'green'
     case 'offer_rejected':
+    case 'service_request_rejected':
       return 'red'
     case 'message_received':
       return 'yellow'
+    case 'service_request_accepted':
+      return 'green'
     case 'offer_received':
+    case 'service_request_received':
     default:
       return 'muted'
   }

@@ -23,11 +23,11 @@ export function DashboardCard({
       )}
     >
       {title ? (
-        <div className="flex items-center justify-between gap-4 border-b border-gorev-navy-800 px-5 py-4 sm:px-6">
-          <h2 className="text-base font-semibold tracking-tight text-gorev-snow">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gorev-navy-800 px-4 py-4 sm:gap-4 sm:px-6">
+          <h2 className="min-w-0 text-base font-semibold tracking-tight text-gorev-snow">
             {title}
           </h2>
-          {action}
+          {action ? <div className="shrink-0">{action}</div> : null}
         </div>
       ) : null}
       {children}

@@ -10,7 +10,7 @@ export function DashboardPage() {
   const { data, isLoading, error, reload } = useDashboard()
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 sm:space-y-8">
+    <div className="mx-auto min-w-0 max-w-7xl space-y-6 sm:space-y-8">
       <DashboardWelcome stats={data?.stats ?? null} isLoading={isLoading} />
 
       {error ? (

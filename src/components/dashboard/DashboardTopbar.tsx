@@ -36,7 +36,7 @@ export function DashboardTopbar({
 
   return (
     <header className="sticky top-0 z-30 border-b border-gorev-navy-800 bg-gorev-navy-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-gorev-navy-950/75">
-      <div className="flex items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between gap-2 px-3 py-3.5 sm:gap-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
@@ -60,14 +60,14 @@ export function DashboardTopbar({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <NotificationBell />
           <div
-            className="rounded-full bg-gradient-to-br from-gorev-navy-800 to-gorev-navy-900 px-3 py-1.5 text-sm font-semibold text-gorev-snow ring-1 ring-gorev-navy-700"
+            className="hidden max-w-[7.5rem] truncate rounded-full bg-gradient-to-br from-gorev-navy-800 to-gorev-navy-900 px-3 py-1.5 text-sm font-semibold text-gorev-snow ring-1 ring-gorev-navy-700 min-[400px]:block sm:max-w-none"
             title={user?.email ?? undefined}
           >
             <span className="hidden sm:inline">Merhaba, </span>
-            <span className="text-gorev-yellow-400">
+            <span className="truncate text-gorev-yellow-400">
               {profileLoading ? '…' : displayName}
             </span>
           </div>

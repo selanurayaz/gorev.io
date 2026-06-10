@@ -226,6 +226,7 @@ function readEmbeddedServiceTitle(row: Record<string, unknown>): string | null {
 export function normalizeServiceRequestRow(
   row: Record<string, unknown>,
   customerNames: Map<string, string> = new Map(),
+  serviceTitles: Map<string, string> = new Map(),
 ): ServiceRequestItem | null {
   const offer = normalizeOfferRow(row)
   if (!offer) return null
@@ -238,12 +239,7 @@ export function normalizeServiceRequestRow(
         ? (row.task as Record<string, unknown>)
         : null
 
-  const resolvedServiceId =
-    row.service_id != null
-      ? String(row.service_id)
-      : taskRow
-        ? readSourceServiceId(taskRow)
-        : null
+  const resolvedServiceId = taskRow ? readSourceServiceId(taskRow) : null
 
   const customerId = task.customer_id
   const customer_name =
@@ -256,7 +252,11 @@ export function normalizeServiceRequestRow(
     customer_id: customerId,
     customer_name,
     service_id: resolvedServiceId,
-    service_title: readEmbeddedServiceTitle(row),
+    service_title:
+      readEmbeddedServiceTitle(row) ??
+      (resolvedServiceId
+        ? (serviceTitles.get(resolvedServiceId) ?? null)
+        : null),
   }
 }
 

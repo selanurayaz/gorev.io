@@ -129,19 +129,19 @@ export function RegisterPage() {
 
         <p className="text-xs leading-relaxed text-gorev-muted">
           Kayıt olarak{' '}
-          <a
-            href="#"
+          <Link
+            to="/#nasil-calisir"
             className="font-medium text-gorev-yellow-400/95 underline-offset-4 hover:underline"
           >
             Kullanım Şartları
-          </a>{' '}
+          </Link>{' '}
           ve{' '}
-          <a
-            href="#"
+          <Link
+            to="/#nasil-calisir"
             className="font-medium text-gorev-yellow-400/95 underline-offset-4 hover:underline"
           >
             Gizlilik Bildirimi
-          </a>
+          </Link>
           ’ni kabul etmiş olursun.
         </p>
 

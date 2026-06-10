@@ -31,8 +31,8 @@ export function ConversationList({
                   : 'hover:bg-gorev-navy-900/60',
               )}
             >
-              <div className="flex items-start justify-between gap-2">
-                <span className="font-medium text-gorev-snow">
+              <div className="flex min-w-0 items-start justify-between gap-2">
+                <span className="min-w-0 flex-1 truncate font-medium text-gorev-snow">
                   {conversation.other_user_name ?? 'Kullanıcı'}
                 </span>
                 {conversation.last_message_at ? (
@@ -44,7 +44,7 @@ export function ConversationList({
                   </time>
                 ) : null}
               </div>
-              <span className="text-xs text-gorev-green-400/90">
+              <span className="truncate text-xs text-gorev-green-400/90">
                 {conversation.task_title}
               </span>
               <span className="line-clamp-2 text-sm text-gorev-muted">

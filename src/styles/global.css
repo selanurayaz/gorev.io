@@ -20,13 +20,14 @@
 @layer base {
   html {
     @apply scroll-smooth antialiased;
+    overflow-x: clip;
   }
 
   body {
-    @apply min-h-dvh bg-gorev-navy-950 font-sans text-gorev-snow;
+    @apply min-h-dvh overflow-x-clip bg-gorev-navy-950 font-sans text-gorev-snow;
   }
 
   #root {
-    @apply min-h-dvh;
+    @apply min-h-dvh min-w-0 overflow-x-clip;
   }
 }

@@ -1,7 +1,7 @@
+import { ServiceCard } from '@/components/services/ServiceCard'
+import { serviceDetailPath } from '@/lib/paths'
 import type { UserRatingSummary } from '@/types/review'
 import type { ServiceListItem } from '@/types/service'
-
-import { ServiceCard } from '@/components/services/ServiceCard'
 
 type ServiceListProps = {
   services: ServiceListItem[]
@@ -19,6 +19,7 @@ export function ServiceList({
           <ServiceCard
             service={service}
             providerRating={serviceRatings.get(service.id) ?? null}
+            detailHref={serviceDetailPath(service.id)}
           />
         </li>
       ))}

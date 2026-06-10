@@ -30,7 +30,7 @@ export function DashboardWelcome({ stats, isLoading }: DashboardWelcomeProps) {
   }
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-gorev-navy-800 bg-gradient-to-br from-gorev-navy-900 via-gorev-navy-950 to-gorev-navy-900 p-6 sm:p-8">
+    <section className="relative overflow-hidden rounded-2xl border border-gorev-navy-800 bg-gradient-to-br from-gorev-navy-900 via-gorev-navy-950 to-gorev-navy-900 p-5 sm:p-8">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_100%_0%,rgba(250,204,21,0.1),transparent_50%)]"
         aria-hidden
@@ -51,7 +51,7 @@ export function DashboardWelcome({ stats, isLoading }: DashboardWelcomeProps) {
               aria-hidden
             />
           ) : (
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-gorev-snow sm:text-3xl">
+            <h2 className="mt-2 break-words text-xl font-semibold tracking-tight text-gorev-snow sm:text-2xl lg:text-3xl">
               {greeting},{' '}
               <span className="text-gorev-yellow-300">{displayName}</span>
             </h2>

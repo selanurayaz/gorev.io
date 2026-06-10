@@ -97,7 +97,7 @@ export function DashboardLayout() {
   }, [sidebarOpen, setSidebarOpen])
 
   return (
-    <div className="flex min-h-dvh bg-gorev-navy-950">
+    <div className="flex min-h-dvh min-w-0 overflow-x-clip bg-gorev-navy-950">
       {/* Desktop sidebar */}
       <div className="hidden w-64 shrink-0 border-r border-gorev-navy-800 bg-gorev-navy-950 lg:block xl:w-72">
         <DashboardSidebar className="sticky top-0 h-dvh" />
@@ -145,7 +145,7 @@ export function DashboardLayout() {
               subtitle={meta.subtitle}
               onMenuClick={() => setSidebarOpen(true)}
             />
-            <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            <main className="min-w-0 flex-1 overflow-x-clip px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
               <Outlet />
             </main>
           </div>

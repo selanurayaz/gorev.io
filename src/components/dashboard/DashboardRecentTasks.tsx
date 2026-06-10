@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { DashboardCard } from '@/components/dashboard/DashboardCard'
 import { DashboardSectionFeedback } from '@/components/dashboard/DashboardSectionFeedback'
 import { formatCityLabel } from '@/lib/cities'
+import { taskDetailPath } from '@/lib/paths'
 import {
   formatTaskBudgetRange,
   formatTaskCreatedAt,
@@ -58,7 +59,7 @@ export function DashboardRecentTasks({
             return (
               <li key={task.id}>
                 <Link
-                  to="/dashboard/gorevlerim"
+                  to={taskDetailPath(task.id)}
                   className="flex w-full flex-col gap-3 px-5 py-4 text-left transition hover:bg-gorev-navy-900/40 sm:flex-row sm:items-center sm:justify-between sm:px-6"
                 >
                   <div className="min-w-0 flex-1">

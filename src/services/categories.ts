@@ -1,5 +1,3 @@
-import type { PostgrestError } from '@supabase/supabase-js'
-
 import { normalizeCategoryRow } from '@/lib/category-mapper'
 import {
   formatCategoryFetchError,
@@ -14,82 +12,49 @@ export type FetchCategoriesResult = {
   error: string | null
 }
 
-type OrderColumn = 'sort_order' | 'name' | 'title'
+function mapCategories(rows: Record<string, unknown>[]): ServiceCategory[] {
+  return rows
+    .map((row) => normalizeCategoryRow(row))
+    .filter((row): row is ServiceCategory => row !== null)
+    .sort((a, b) => a.name.localeCompare(b.name, 'tr'))
+}
 
-async function queryCategories(
-  orderBy: OrderColumn,
-): Promise<{ rows: Record<string, unknown>[]; error: PostgrestError | null }> {
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .order(orderBy, { ascending: true })
-
-  if (error) {
-    return { rows: [], error }
-  }
-
-  if (!Array.isArray(data)) {
-    return { rows: [], error: null }
-  }
-
-  return {
-    rows: data.filter(
-      (row): row is Record<string, unknown> =>
-        row !== null && typeof row === 'object',
-    ),
-    error: null,
-  }
+function toRows(data: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(data)) return []
+  return data.filter(
+    (row): row is Record<string, unknown> =>
+      row !== null && typeof row === 'object',
+  )
 }
 
 /** Aktif kategorileri Supabase `categories` tablosundan getirir. */
 export async function fetchCategories(): Promise<FetchCategoriesResult> {
-  const orderCandidates: OrderColumn[] = ['sort_order', 'name', 'title']
-  let lastError: PostgrestError | null = null
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .order('name', { ascending: true })
 
-  for (const orderBy of orderCandidates) {
-    const { rows, error } = await queryCategories(orderBy)
-
-    if (!error) {
-      const categories = rows
-        .map((row) => normalizeCategoryRow(row))
-        .filter((row): row is ServiceCategory => row !== null)
-
-      if (import.meta.env.DEV) {
-        console.info('[categories] loaded', { count: categories.length, orderBy })
-      }
-
-      return { categories, error: null }
-    }
-
-    lastError = error
-    logSupabaseError('fetchCategories', error, { orderBy })
-
-    if (!isPostgrestSchemaError(error)) {
-      break
-    }
+  if (!error) {
+    return { categories: mapCategories(toRows(data)), error: null }
   }
 
-  if (lastError) {
-    const { data, error } = await supabase.from('categories').select('*')
-
-    if (!error && Array.isArray(data)) {
-      const categories = data
-        .filter(
-          (row): row is Record<string, unknown> =>
-            row !== null && typeof row === 'object',
-        )
-        .map((row) => normalizeCategoryRow(row))
-        .filter((row): row is ServiceCategory => row !== null)
-        .sort((a, b) => a.name.localeCompare(b.name, 'tr'))
-
-      return { categories, error: null }
-    }
-
+  if (!isPostgrestSchemaError(error)) {
+    logSupabaseError('fetchCategories', error)
     return {
       categories: [],
-      error: formatCategoryFetchError(lastError),
+      error: formatCategoryFetchError(error),
     }
   }
 
-  return { categories: [], error: null }
+  const fallback = await supabase.from('categories').select('*')
+
+  if (!fallback.error) {
+    return { categories: mapCategories(toRows(fallback.data)), error: null }
+  }
+
+  logSupabaseError('fetchCategories.fallback', fallback.error)
+  return {
+    categories: [],
+    error: formatCategoryFetchError(fallback.error),
+  }
 }

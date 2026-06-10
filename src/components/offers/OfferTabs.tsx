@@ -25,7 +25,7 @@ export function OfferTabs({
 }: OfferTabsProps) {
   return (
     <div
-      className="flex flex-wrap gap-2 rounded-xl border border-gorev-navy-800 bg-gorev-navy-900/50 p-1.5"
+      className="grid grid-cols-1 gap-1.5 rounded-xl border border-gorev-navy-800 bg-gorev-navy-900/50 p-1.5 sm:flex sm:flex-wrap sm:gap-2"
       role="tablist"
       aria-label="Teklif sekmeleri"
     >
@@ -46,7 +46,7 @@ export function OfferTabs({
             aria-selected={isActive}
             onClick={() => onChange(tab.id)}
             className={cn(
-              'min-h-10 flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition sm:flex-none sm:px-5',
+              'min-h-11 w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition min-[420px]:text-center sm:w-auto sm:flex-none sm:px-5',
               isActive
                 ? 'bg-gorev-navy-800 text-gorev-snow shadow-sm ring-1 ring-gorev-yellow-400/25'
                 : 'text-gorev-muted hover:bg-gorev-navy-800/60 hover:text-gorev-snow',

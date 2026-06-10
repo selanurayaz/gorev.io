@@ -20,6 +20,7 @@ import { TaskDetailPage } from '@/pages/TaskDetailPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
+import { NotFoundPage } from '@/pages/NotFoundPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 
 export function AppRoutes() {
@@ -55,6 +56,8 @@ export function AppRoutes() {
           <Route path="profil" element={<ProfileSettingsPage />} />
         </Route>
       </Route>
+
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

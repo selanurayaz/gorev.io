@@ -14,7 +14,7 @@ import {
 } from '@/lib/auth-forms'
 
 type LocationState = {
-  from?: { pathname?: string }
+  from?: { pathname?: string; search?: string; hash?: string }
 }
 
 export function LoginPage() {
@@ -22,8 +22,10 @@ export function LoginPage() {
   const location = useLocation()
   const { signIn } = useAuth()
 
-  const redirectTo =
-    (location.state as LocationState | null)?.from?.pathname ?? '/dashboard'
+  const from = (location.state as LocationState | null)?.from
+  const redirectTo = from
+    ? `${from.pathname ?? '/dashboard'}${from.search ?? ''}${from.hash ?? ''}`
+    : '/dashboard'
 
   const [values, setValues] = useState<LoginFormValues>({
     email: '',

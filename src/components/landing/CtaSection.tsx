@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { composeButtonClassName } from '@/lib/button-styles'
 import { Container } from '@/components/ui/Container'
 
@@ -34,24 +36,24 @@ export function CtaSection() {
               olanlar olacak.
             </p>
             <div className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:justify-center">
-              <a
-                href="#"
+              <Link
+                to="/kayit"
                 className={composeButtonClassName(
                   'primary',
                   'min-h-12 justify-center px-10 text-base',
                 )}
               >
-                Bekleme listesine katıl
-              </a>
-              <a
-                href="#"
+                Ücretsiz kayıt ol
+              </Link>
+              <Link
+                to="/kesfet"
                 className={composeButtonClassName(
                   'outline',
                   'min-h-12 justify-center px-10 text-base',
                 )}
               >
-                Kurumsal iletişim
-              </a>
+                İlanları keşfet
+              </Link>
             </div>
           </div>
         </div>

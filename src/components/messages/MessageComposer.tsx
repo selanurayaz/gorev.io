@@ -33,7 +33,7 @@ export function MessageComposer({
 
   return (
     <form
-      className="flex gap-2 border-t border-gorev-navy-800 bg-gorev-navy-950/80 p-3 sm:p-4"
+      className="flex flex-col gap-2 border-t border-gorev-navy-800 bg-gorev-navy-950/80 p-3 sm:flex-row sm:items-end sm:p-4"
       onSubmit={handleSubmit}
     >
       <label className="sr-only" htmlFor="message-input">
@@ -47,11 +47,11 @@ export function MessageComposer({
         onKeyDown={handleKeyDown}
         disabled={disabled || isSending}
         placeholder="Mesajınızı yazın…"
-        className="block min-h-[44px] flex-1 resize-none rounded-xl border border-gorev-navy-700 bg-gorev-navy-950/70 px-3 py-2.5 text-sm text-gorev-snow outline-none transition placeholder:text-gorev-muted focus:border-gorev-yellow-400/45 focus:ring-2 focus:ring-gorev-yellow-400/25 disabled:opacity-60"
+        className="block min-h-[44px] min-w-0 flex-1 resize-none rounded-xl border border-gorev-navy-700 bg-gorev-navy-950/70 px-3 py-2.5 text-sm text-gorev-snow outline-none transition placeholder:text-gorev-muted focus:border-gorev-yellow-400/45 focus:ring-2 focus:ring-gorev-yellow-400/25 disabled:opacity-60"
       />
       <Button
         type="submit"
-        className="min-h-11 shrink-0 self-end px-4"
+        className="min-h-11 w-full shrink-0 px-4 sm:w-auto"
         loading={isSending}
         disabled={disabled || !text.trim()}
       >
