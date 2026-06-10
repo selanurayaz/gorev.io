@@ -1,73 +1,153 @@
-# React + TypeScript + Vite
+# görev.io
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Mikro Hizmet, Makro Kolaylık.
 
-Currently, two official plugins are available:
+Görev.io, hizmet almak isteyen kullanıcılar ile hizmet sunan bireyleri güvenilir, hızlı ve adil bir şekilde bir araya getiren yapay zekâ destekli mikro hizmet pazaryeri platformudur.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Platform; görev oluşturma, hizmet yayınlama, teklif verme, hizmet talep etme, mesajlaşma ve değerlendirme süreçlerini tek bir sistem içerisinde birleştirerek kullanıcıların ihtiyaç duydukları hizmetlere daha kolay ulaşmalarını sağlar.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Proje Amacı
 
-## Expanding the ESLint configuration
+Günümüzde hizmet sektöründe karşılaşılan en önemli problemlerden biri fiyat belirsizliğidir. Aynı hizmet için farklı kişiler tarafından çok farklı ücretler talep edilebilmekte, bu durum hem hizmet alan kullanıcılar hem de hizmet sağlayıcılar açısından karar verme sürecini zorlaştırmaktadır.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Görev.io, bu probleme çözüm üretmek amacıyla geliştirilmiştir. Platform, kullanıcıların ihtiyaç duydukları hizmetleri kolayca bulabilmelerini sağlarken aynı zamanda yapay zekâ destekli fiyat öneri sistemi sayesinde daha dengeli ve şeffaf bir hizmet ekosistemi oluşturmayı hedeflemektedir.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# Yapay Zekâ Destekli Fiyat Öneri Sistemi
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Görev.io'nun en önemli özelliklerinden biri Google Gemini API kullanılarak geliştirilen yapay zekâ destekli fiyat öneri sistemidir.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Kullanıcı bir hizmet oluştururken;
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+* Hizmet başlığı
+* Açıklama
+* Kategori
+* Şehir bilgisi
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+gibi veriler analiz edilir ve sistem tarafından:
+
+* Önerilen fiyat
+* Minimum fiyat
+* Maksimum fiyat
+* Fiyatlandırma gerekçesi
+
+oluşturulur.
+
+Bu sistem sayesinde:
+
+* Gerçekçi olmayan fiyatlandırmaların azaltılması,
+* Yeni hizmet sağlayıcıların piyasa hakkında fikir sahibi olması,
+* Hizmet alan kullanıcıların referans fiyat aralığı görebilmesi,
+* Daha adil ve şeffaf bir hizmet ortamı oluşturulması
+
+amaçlanmaktadır.
+
+Yapay zekâ, Görev.io içerisinde yalnızca bir teknoloji entegrasyonu olarak değil; kullanıcıların karar verme süreçlerini destekleyen ve fiyat dengesine katkı sağlayan bir araç olarak kullanılmaktadır.
+
+---
+
+# Özellikler
+
+## Kullanıcı Yönetimi
+
+* Kayıt olma
+* Giriş yapma
+* Oturum yönetimi
+* Profil düzenleme
+
+## Görev Sistemi
+
+* Görev oluşturma
+* Görev keşfetme
+* Görevlere teklif verme
+* Teklif kabul ve reddetme
+
+## Hizmet Sistemi
+
+* Hizmet oluşturma
+* Hizmet yayınlama
+* Hizmet detay sayfası
+* Hizmet talep etme
+
+## Mesajlaşma Sistemi
+
+* Kullanıcılar arası mesajlaşma
+* Hizmet süreçlerinde iletişim yönetimi
+* Bildirim destekli iletişim
+
+## Değerlendirme Sistemi
+
+* 1–5 yıldız puanlama
+* Hizmete özel yorum bırakma
+* Ortalama puan hesaplama
+* Hizmet bazlı değerlendirme görüntüleme
+
+## Bildirim Sistemi
+
+* Yeni teklif bildirimi
+* Hizmet talebi bildirimi
+* Kabul ve red bildirimleri
+
+---
+
+# Kullanılan Teknolojiler
+
+### Frontend
+
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+
+### Backend
+
+* Supabase
+
+### Veritabanı
+
+* PostgreSQL
+
+### Yapay Zekâ
+
+* Google Gemini API
+
+---
+
+# Veritabanı Yapısı
+
+Platformun temel veri yapısı aşağıdaki tablolardan oluşmaktadır:
+
+* profiles
+* tasks
+* services
+* offers
+* reviews
+* messages
+* notifications
+* categories
+
+---
+
+# Kullanım Akışı
+
+1. Kullanıcı sisteme kayıt olur.
+2. Hizmet oluşturur veya görev yayınlar.
+3. Diğer kullanıcılar hizmet talebinde bulunur veya teklif verir.
+4. Hizmet sağlayıcı talebi kabul eder.
+5. Taraflar mesajlaşma sürecine geçer.
+6. İş tamamlanır.
+7. Kullanıcı değerlendirme bırakır.
+8. Değerlendirme ilgili hizmet kartına yansıtılır.
+
+---
+
+# Geliştirici
+
+**Selanur Ayaz**
+Yazılım Mühendisliği Öğrencisi
+Fırat Üniversitesi
+
+Görev.io, yazılım geliştirme, veritabanı yönetimi, kullanıcı deneyimi tasarımı ve yapay zekâ entegrasyonu alanlarında edinilen bilgilerin bir araya getirilmesiyle geliştirilmiştir.
