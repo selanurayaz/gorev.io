@@ -77,7 +77,7 @@ export function ProfileSettingsForm() {
   }
 
   return (
-    <form className="space-y-5 p-5 sm:p-6" onSubmit={handleSubmit} noValidate>
+    <form className="space-y-4 p-4 sm:space-y-5 sm:p-6" onSubmit={handleSubmit} noValidate>
       <div className="rounded-xl border border-gorev-navy-800 bg-gorev-navy-900/40 p-4">
         <p className="text-xs font-semibold uppercase tracking-wide text-gorev-muted">
           Ortalama puanınız

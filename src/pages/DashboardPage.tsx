@@ -10,7 +10,7 @@ export function DashboardPage() {
   const { data, isLoading, error, reload } = useDashboard()
 
   return (
-    <div className="mx-auto min-w-0 max-w-7xl space-y-6 sm:space-y-8">
+    <div className="mx-auto min-w-0 max-w-7xl space-y-4 sm:space-y-6 lg:space-y-8">
       <DashboardWelcome stats={data?.stats ?? null} isLoading={isLoading} />
 
       {error ? (
@@ -33,8 +33,8 @@ export function DashboardPage() {
         onRetry={reload}
       />
 
-      <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
-        <div className="space-y-6 lg:col-span-2 lg:space-y-8">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+        <div className="space-y-4 sm:space-y-6 lg:col-span-2 lg:space-y-8">
           <DashboardRecentTasks
             tasks={data?.recentTasks ?? []}
             isLoading={isLoading}

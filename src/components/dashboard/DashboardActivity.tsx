@@ -37,7 +37,7 @@ export function DashboardActivity({
       />
 
       {!isLoading && !error && activity.length > 0 ? (
-        <ul className="space-y-0 p-5 sm:p-6">
+        <ul className="space-y-0 p-4 sm:p-6">
           {activity.map((item, index) => (
             <li
               key={item.id}

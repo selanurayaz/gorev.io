@@ -35,13 +35,13 @@ export function DashboardTopbar({
   const { user, displayName, isLoading: profileLoading } = useProfile()
 
   return (
-    <header className="sticky top-0 z-30 border-b border-gorev-navy-800 bg-gorev-navy-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-gorev-navy-950/75">
-      <div className="flex items-center justify-between gap-2 px-3 py-3.5 sm:gap-4 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 items-center gap-3">
+    <header className="sticky top-0 z-30 shrink-0 border-b border-gorev-navy-800 bg-gorev-navy-950/90 pt-safe-top backdrop-blur-xl supports-[backdrop-filter]:bg-gorev-navy-950/75 lg:static lg:pt-0">
+      <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:gap-4 sm:px-6 sm:py-3.5 lg:px-8">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
             type="button"
             className={cn(
-              'inline-flex shrink-0 items-center justify-center rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/60 p-2.5 text-gorev-snow transition hover:border-gorev-yellow-400/40 lg:hidden',
+              'inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/60 p-2.5 text-gorev-snow transition hover:border-gorev-yellow-400/40 lg:hidden',
             )}
             onClick={onMenuClick}
             aria-label="Menüyü aç"
@@ -49,11 +49,11 @@ export function DashboardTopbar({
             <MenuIcon />
           </button>
           <div className="min-w-0">
-            <h1 className="truncate text-lg font-semibold tracking-tight text-gorev-snow sm:text-xl">
+            <h1 className="truncate text-base font-semibold tracking-tight text-gorev-snow sm:text-xl">
               {title}
             </h1>
             {subtitle ? (
-              <p className="truncate text-xs text-gorev-muted sm:text-sm">
+              <p className="hidden truncate text-xs text-gorev-muted min-[380px]:block sm:text-sm">
                 {subtitle}
               </p>
             ) : null}

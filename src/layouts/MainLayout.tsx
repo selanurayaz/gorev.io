@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/layout/SiteHeader'
 
 export function MainLayout() {
   return (
-    <div className="flex min-h-dvh min-w-0 flex-col overflow-x-clip">
+    <div className="flex min-h-dvh min-w-0 flex-col overflow-x-hidden pb-safe-bottom">
       <SiteHeader />
 
       <main className="flex-1">

@@ -30,7 +30,7 @@ export function DashboardWelcome({ stats, isLoading }: DashboardWelcomeProps) {
   }
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-gorev-navy-800 bg-gradient-to-br from-gorev-navy-900 via-gorev-navy-950 to-gorev-navy-900 p-5 sm:p-8">
+    <section className="relative overflow-x-hidden rounded-2xl border border-gorev-navy-800 bg-gradient-to-br from-gorev-navy-900 via-gorev-navy-950 to-gorev-navy-900 p-4 sm:p-8">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_100%_0%,rgba(250,204,21,0.1),transparent_50%)]"
         aria-hidden
@@ -39,7 +39,7 @@ export function DashboardWelcome({ stats, isLoading }: DashboardWelcomeProps) {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_0%_100%,rgba(34,197,94,0.12),transparent_55%)]"
         aria-hidden
       />
-      <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gorev-green-400">
             Kontrol paneli
@@ -51,7 +51,7 @@ export function DashboardWelcome({ stats, isLoading }: DashboardWelcomeProps) {
               aria-hidden
             />
           ) : (
-            <h2 className="mt-2 break-words text-xl font-semibold tracking-tight text-gorev-snow sm:text-2xl lg:text-3xl">
+            <h2 className="mt-1.5 break-words text-lg font-semibold tracking-tight text-gorev-snow sm:mt-2 sm:text-2xl lg:text-3xl">
               {greeting},{' '}
               <span className="text-gorev-yellow-300">{displayName}</span>
             </h2>
@@ -60,7 +60,7 @@ export function DashboardWelcome({ stats, isLoading }: DashboardWelcomeProps) {
           <ProfileLoadState error={error} onRetry={refetch} />
 
           {!profileLoading && !isLoading ? (
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-gorev-muted sm:text-base">
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-gorev-muted sm:mt-3 sm:text-base">
               {summary}
             </p>
           ) : null}

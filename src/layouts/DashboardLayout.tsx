@@ -88,16 +88,14 @@ export function DashboardLayout() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setSidebarOpen(false)
     }
-    document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
     return () => {
-      document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
   }, [sidebarOpen, setSidebarOpen])
 
   return (
-    <div className="flex min-h-dvh min-w-0 overflow-x-clip bg-gorev-navy-950">
+    <div className="min-h-dvh min-w-0 overflow-x-hidden bg-gorev-navy-950 lg:flex lg:h-dvh lg:min-h-0">
       {/* Desktop sidebar */}
       <div className="hidden w-64 shrink-0 border-r border-gorev-navy-800 bg-gorev-navy-950 lg:block xl:w-72">
         <DashboardSidebar className="sticky top-0 h-dvh" />
@@ -116,7 +114,7 @@ export function DashboardLayout() {
       <div
         id={drawerId}
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-[min(100%,18rem)] border-r border-gorev-navy-800 bg-gorev-navy-950 shadow-2xl transition-transform duration-200 lg:hidden',
+          'fixed bottom-0 left-0 top-0 z-50 w-[min(100%,18rem)] border-r border-gorev-navy-800 bg-gorev-navy-950 pt-safe-top shadow-2xl transition-transform duration-200 lg:hidden',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
         )}
         aria-hidden={!sidebarOpen}
@@ -139,13 +137,13 @@ export function DashboardLayout() {
 
       <NotificationsProvider>
         <ProfileProvider>
-          <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex min-w-0 flex-1 flex-col lg:min-h-0">
             <DashboardTopbar
               title={meta.title}
               subtitle={meta.subtitle}
               onMenuClick={() => setSidebarOpen(true)}
             />
-            <main className="min-w-0 flex-1 overflow-x-clip px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
+            <main className="min-w-0 overflow-x-hidden px-3 py-4 pb-safe-bottom sm:px-6 sm:py-8 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pb-8">
               <Outlet />
             </main>
           </div>

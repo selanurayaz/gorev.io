@@ -60,7 +60,7 @@ export function DashboardRecentTasks({
               <li key={task.id}>
                 <Link
                   to={taskDetailPath(task.id)}
-                  className="flex w-full flex-col gap-3 px-5 py-4 text-left transition hover:bg-gorev-navy-900/40 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+                  className="flex w-full flex-col gap-2 px-4 py-3 text-left transition hover:bg-gorev-navy-900/40 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:py-4"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">

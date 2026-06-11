@@ -77,8 +77,8 @@ export function SiteHeader() {
   }, [menuOpen])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gorev-navy-800/90 bg-gorev-navy-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-gorev-navy-950/75">
-      <Container className="flex items-center justify-between gap-4 py-3.5 sm:py-4">
+    <header className="sticky top-0 z-50 border-b border-gorev-navy-800/90 bg-gorev-navy-950/90 pt-safe-top backdrop-blur-xl supports-[backdrop-filter]:bg-gorev-navy-950/75">
+      <Container className="flex items-center justify-between gap-4 py-2.5 sm:py-4">
         <Link
           to={homePath}
           className="text-lg font-semibold tracking-tight text-gorev-snow transition-colors hover:text-gorev-yellow-300"
@@ -166,7 +166,7 @@ export function SiteHeader() {
           <button
             type="button"
             className={cn(
-              'inline-flex items-center justify-center rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/60 p-2.5 text-gorev-snow transition hover:border-gorev-yellow-400/40 hover:bg-gorev-navy-900',
+              'inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gorev-navy-700 bg-gorev-navy-900/60 p-2.5 text-gorev-snow transition hover:border-gorev-yellow-400/40 hover:bg-gorev-navy-900',
               menuOpen && 'border-gorev-yellow-400/50 bg-gorev-navy-900',
             )}
             aria-expanded={menuOpen}
